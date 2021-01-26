@@ -22,6 +22,7 @@ def start_game():    # Начало игра (закрытие меню)
 
 
 def start():    # Выполняется до начала игры
+    return
     while is_menu:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
