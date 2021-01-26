@@ -1,11 +1,11 @@
+import general
 import pygame
 import sys
 
 
 pygame.init()
-size = WIDTH, HEIGHT = 1920, 1080
-screen = pygame.display.set_mode(size)
-FPS = 60
+screen = pygame.display.set_mode(general.size)
+
 clock = pygame.time.Clock()
 
 is_menu = True
@@ -32,6 +32,8 @@ def update():    # цикл...
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             terminate()
+
+    clock.tick(general.FPS)
 
 
 if __name__ == '__main__':
