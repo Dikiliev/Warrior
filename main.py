@@ -1,4 +1,7 @@
 import general
+from general import load_image
+from components import Camera, RigidBody, Transform, Background, Animator
+from characters import Character
 import pygame
 import sys
 
@@ -26,17 +29,77 @@ def start_screen():    # Выполняется до начала игры
                 terminate()
 
 
+camera = None
+cursor = None
+player = None
+
+
 def start():
+    global cursor
+    global camera
+    global player
+
     general.load_map()
+
+    player = Character(general.load_image('Pers/Idle.png'), Transform((100, 100)), group=general.player_group)
+
+    camera = Camera(Transform((0, 0), parent=player.transform_), offset=(-900, -540))
+    general.camera = camera
+
+    rb = RigidBody()
+    player.add_RigidBody(rb)
+    player.animator = Animator('Pers')
+
+    cursor = Background(load_image('cursor.png'), Transform((100, 100)))
+
+
+direction = 0
+mouse_pos = (0, 0)
 
 
 def update():    # цикл...
+    global direction, mouse_pos
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             terminate()
+        if event.type == pygame.KEYDOWN:
+            if event.key in (pygame.K_RIGHT, pygame.K_d):
+                direction = 1
+            elif event.key in (pygame.K_LEFT, pygame.K_a):
+                direction = -1
+            elif event.key in (pygame.K_UP, pygame.K_w):
+                player.jump()
+            elif event.key == pygame.K_ESCAPE:
+                terminate()
+
+        if event.type == pygame.KEYUP:
+            if event.key in (pygame.K_RIGHT, pygame.K_d) and direction == 1:
+                direction = 0
+            elif event.key in (pygame.K_LEFT, pygame.K_a) and direction == -1:
+                direction = 0
+
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            if event.button == 1:
+                player.weapon.attack = True
+
+        if event.type == pygame.MOUSEBUTTONUP:
+            if event.button == 1:
+                player.weapon.attack = False
+
+        if event.type == pygame.MOUSEMOTION:
+            mouse_pos = event.pos
+            cursor.transform_.set_pos(mouse_pos[0] - 10, mouse_pos[1] - 10)
+            camera.transform_.pos = camera.offset + (cursor.transform_.pos - pygame.math.Vector2(960, 540)) * 0.2
+            if cursor.transform_.x() > 940:
+                player.is_flip = False
+            else:
+                player.is_flip = True
+
+            pygame.mouse.set_visible(False)
 
     general.screen.fill(pygame.Color((255, 255, 255)))
 
+    player.move(direction)  # Движения перса в направлении direction
     general.all_sprites.update()
     general.all_sprites.draw(general.screen)
 

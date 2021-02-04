@@ -28,6 +28,21 @@ class Transform:    # Типа класс позиции и размера
         return int(self.pos.y)
 
 
+class RigidBody:    # Типа физика))
+    def __init__(self):
+        self.velocity = pygame.math.Vector2(0, 0)
+        self.gravity = 500
+
+    def addForce(self, force):    # пока не используется
+        self.velocity += force
+
+    def update(self):    # Вызывается каждый кадр
+        if self.velocity.y < self.gravity:
+            self.velocity.y += self.gravity // 10
+            if self.velocity.y > self.gravity:
+                self.velocity.y = self.gravity
+
+
 class Camera:
     def __init__(self, transform, offset=(0, 0)):
         self.transform_ = transform
@@ -61,3 +76,55 @@ class Background(Sprite):
     def update(self):
         self.rect = self.image.get_rect().move(self.transform_.x() - int(general.camera.transform_.x() * self.speed),
                                                self.transform_.y() - int(general.camera.transform_.y() * self.speed))
+
+
+class AnimationClip:
+    def __init__(self, sheet, columns, rows, time_frames):
+        self.sheet = sheet
+
+        self.frames = []
+        self.cut_sheet(sheet, int(columns), int(rows))
+
+        self.image = self.frames[0]
+
+        self.time = 0.0
+        self.end = max(list(time_frames.keys()))
+        self.time_frames = {}
+
+        for time in time_frames:
+            self.time_frames[time] = self.frames[time_frames[time]]
+
+    def cut_sheet(self, sheet, columns, rows):
+        self.rect = pygame.Rect(0, 0, sheet.get_width() // columns,
+                                sheet.get_height() // rows)
+        for j in range(rows):
+            for i in range(columns):
+                frame_location = (self.rect.w * i, self.rect.h * j)
+                self.frames.append(sheet.subsurface(pygame.Rect(
+                    frame_location, self.rect.size)))
+
+    def update(self):
+        self.time += 1 / general.FPS
+        keys = list(self.time_frames.keys())
+        key = max(keys, key=lambda x: (float(x) <= self.time, x))
+        if self.time >= self.end:
+            self.time = 0
+        self.image = self.time_frames[key]
+
+
+class Animator:
+    def __init__(self, controller):
+        controller = open(f'data/Animations/{controller}.txt', 'r').read()
+        self.animations = []
+        for ani in controller.split('\n'):
+            ani = ani.split(';')
+            self.animations.append(AnimationClip(general.load_image(ani[0]), ani[1], ani[2], eval(ani[3])))
+        self.current_ani = self.animations[0]
+
+    def set_animation(self, i):
+        if i >= len(self.animations):
+            return
+        self.current_ani = self.animations[i]
+
+    def update(self):
+        self.current_ani.update()
