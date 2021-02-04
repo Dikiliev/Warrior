@@ -3,10 +3,7 @@ import pygame
 import sys
 
 
-pygame.init()
-screen = pygame.display.set_mode(general.size)
 
-clock = pygame.time.Clock()
 
 is_menu = True
 
@@ -21,7 +18,7 @@ def start_game():    # Начало игра (закрытие меню)
     is_menu = False
 
 
-def start():    # Выполняется до начала игры
+def start_screen():    # Выполняется до начала игры
     return
     while is_menu:
         for event in pygame.event.get():
@@ -29,12 +26,22 @@ def start():    # Выполняется до начала игры
                 terminate()
 
 
+def start():
+    general.load_map()
+
+
 def update():    # цикл...
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             terminate()
 
-    clock.tick(general.FPS)
+    general.screen.fill(pygame.Color((255, 255, 255)))
+
+    general.all_sprites.update()
+    general.all_sprites.draw(general.screen)
+
+    pygame.display.flip()
+    general.clock.tick(general.FPS)
 
 
 if __name__ == '__main__':

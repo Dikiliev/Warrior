@@ -1,3 +1,4 @@
+import pygame
 import general
 
 
@@ -38,7 +39,7 @@ class Camera:
 
 class Sprite(pygame.sprite.Sprite):    # Класс Спрайта
     def __init__(self, image, transform, group=None):
-        super().__init__(all_sprites)
+        super().__init__(general.all_sprites)
         if group is not None:
             self.add(group)
 
