@@ -22,3 +22,28 @@ class Transform:    # Типа класс позиции и размера
         if self.parent is not None:
             return int(self.parent.pos.y + self.pos.y)
         return int(self.pos.y)
+
+
+class Camera:
+    def __init__(self, transform, offset=(0, 0)):
+        self.transform_ = transform
+        self.offset = pygame.math.Vector2(offset[0], offset[1])     # Смещение
+
+    def follow(self, pos):     # Слежение
+        self.transform_.pos = pos + self.offset
+
+
+class Sprite(pygame.sprite.Sprite):    # Класс Спрайта
+    def __init__(self, image, transform, group=None):
+        super().__init__(all_sprites)
+        if group is not None:
+            self.add(group)
+
+        self.transform_ = transform
+        self.image = image
+        self.rect = self.image.get_rect().move(self.transform_.x() - camera.transform_.x(),
+                                               self.transform_.y() - camera.transform_.y())
+
+    def update(self):
+        self.rect = self.image.get_rect().move(self.transform_.x() - camera.transform_.x(),
+                                               self.transform_.y() - camera.transform_.y())
