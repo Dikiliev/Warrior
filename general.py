@@ -12,6 +12,8 @@ borders_group = pygame.sprite.Group()
 traps_group = pygame.sprite.Group()
 buttons_group = pygame.sprite.Group()
 
+camera = Camera((0, 0))
+
 
 def load_image(name, color_key=None):
     fullname = os.path.join('data', name)

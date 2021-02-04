@@ -1,3 +1,6 @@
+import general
+
+
 class Transform:    # Типа класс позиции и размера
     def __init__(self, pos, scale=(1, 1), parent=None):
         self.pos = pygame.math.Vector2(pos[0], pos[1])
@@ -41,9 +44,19 @@ class Sprite(pygame.sprite.Sprite):    # Класс Спрайта
 
         self.transform_ = transform
         self.image = image
-        self.rect = self.image.get_rect().move(self.transform_.x() - camera.transform_.x(),
-                                               self.transform_.y() - camera.transform_.y())
+        self.rect = self.image.get_rect().move(self.transform_.x() - general.camera.transform_.x(),
+                                               self.transform_.y() - general.camera.transform_.y())
 
     def update(self):
-        self.rect = self.image.get_rect().move(self.transform_.x() - camera.transform_.x(),
-                                               self.transform_.y() - camera.transform_.y())
+        self.rect = self.image.get_rect().move(self.transform_.x() - general.camera.transform_.x(),
+                                               self.transform_.y() - general.camera.transform_.y())
+
+
+class Background(Sprite):
+    def __init__(self, image, transform, group=None, speed=0):
+        super().__init__(image, transform, group)
+        self.speed = speed
+
+    def update(self):
+        self.rect = self.image.get_rect().move(self.transform_.x() - int(general.camera.transform_.x() * self.speed),
+                                               self.transform_.y() - int(general.camera.transform_.y() * self.speed))
