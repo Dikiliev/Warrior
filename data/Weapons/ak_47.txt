@@ -1,0 +1,10 @@
+{'name': 'ak_47',
+'img': 0,
+'pos': (-10, 55),
+'pos_f': (-25, 55),
+'spawn': (100, 2),
+'spawn_f': (10, 2),
+'damage': 35,
+'rate_of': 0.2,
+'speed': 1500,
+'bullet': 0}
