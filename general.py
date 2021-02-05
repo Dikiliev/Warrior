@@ -57,6 +57,10 @@ def cut_sheet(sheet, columns, rows, custom=False):
     return frames
 
 
+weapons = cut_sheet(load_image('Weapons.png'), 1, 3)
+bullets = cut_sheet(load_image('Bullets.png'), 1, 3)
+
+
 KEY_PLATFORM = {'up left': 0,   'up': 1,   'up right': 2,
                 'left': 4,      '': 4,    'right': -1,
                 'down left': 4, 'down': 4, 'down right': 5,

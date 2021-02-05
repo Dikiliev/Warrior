@@ -115,3 +115,77 @@ class Character(Sprite):    # Класс перса
 
     def shoot(self):
         pass
+
+
+class Weapon(Sprite):    # Класс оружия (недоработан!)
+    def __init__(self, name, parent=None, group=None):
+        self.options = eval(open(f'data/Weapons/{name}.txt', 'r').read())
+
+        super().__init__(general.weapons[self.options['img']], Transform(self.options['pos'], parent=parent), group)
+
+        self.options['bullet'] = general.bullets[self.options['bullet']]
+
+        self.spawn_pos = self.options['spawn']
+        self.orig_img = self.image.copy()
+        self.bullet = self.options['bullet'].copy()
+
+        self.attack = False
+        self.next_shot = 0
+
+    def flip(self, is_flip):
+        self.image = pygame.transform.flip(self.orig_img, is_flip, False)
+        self.bullet = pygame.transform.flip(self.options['bullet'], is_flip, False)
+        if is_flip:
+            self.transform_.pos = pygame.math.Vector2(self.options['pos_f'])
+            self.spawn_pos = self.options['spawn_f']
+        else:
+            self.transform_.pos = pygame.math.Vector2(self.options['pos'])
+            self.spawn_pos = self.options['spawn']
+
+    def shoot(self):
+        mouse_pos = pygame.mouse.get_pos()
+        s = Bullet(self.bullet, Transform(self.transform_.global_pos() + self.spawn_pos), general.player_group)
+        s.speed = self.options['speed']
+
+        direction = (mouse_pos[0] - self.transform_.x() + general.camera.transform_.x() - self.spawn_pos[0],
+                     mouse_pos[1] - self.transform_.y() + general.camera.transform_.y() - self.spawn_pos[1])
+
+        maxx = max(map(lambda x: abs(x), direction))
+        s.rb.velocity.x = s.speed * direction[0] / maxx
+        s.rb.velocity.y = s.speed * direction[1] / maxx
+
+        self.next_shot = self.options['rate_of']
+
+    def update(self):
+        super().update()
+        if self.next_shot > 0:
+            self.next_shot -= 1 / general.FPS
+
+        elif self.attack:
+            self.shoot()
+
+
+class Bullet(Sprite):    # Класс сюрикена, только его пока нету)))
+    def __init__(self, image, transform, group=None, speed=1500, damage=25):
+        self.rb = RigidBody()
+        self.rb.gravity = 0
+
+        super().__init__(image, transform)
+        self.speed = speed
+        self.damage = damage
+        self.time_destroy = 10.0  # Время до самоунчтожения
+
+    def update(self):
+        if self.rb:    # Усли перс физичный
+            self.rb.update()    # вызывает update у RigidBody
+            colliders = pygame.sprite.spritecollide(self, general.borders_group, False)    # Все объекты с которыми сталкивается перс
+
+            if colliders:    # Проверка сталкивается вообще
+                self.kill()
+            elif self.time_destroy <= 0:
+                self.kill()
+            self.time_destroy -= 1 / general.FPS
+
+            self.transform_.pos += (self.rb.velocity / general.FPS)  # меняем позицию перса
+
+        super().update()

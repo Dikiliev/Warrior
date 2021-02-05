@@ -1,7 +1,7 @@
 import general
 from general import load_image
 from components import Camera, RigidBody, Transform, Background, Animator
-from characters import Character
+from characters import Character, Weapon
 import pygame
 import sys
 
@@ -50,6 +50,9 @@ def start():
     player.add_RigidBody(rb)
     player.animator = Animator('Pers')
 
+    weapon = Weapon('ak_47', player.transform_, general.player_group)
+    player.weapon = weapon
+
     cursor = Background(load_image('cursor.png'), Transform((100, 100)))
 
 
@@ -67,7 +70,7 @@ def update():    # цикл...
                 direction = 1
             elif event.key in (pygame.K_LEFT, pygame.K_a):
                 direction = -1
-            elif event.key in (pygame.K_UP, pygame.K_w):
+            elif event.key in (pygame.K_UP, pygame.K_w, pygame.K_SPACE):
                 player.jump()
             elif event.key == pygame.K_ESCAPE:
                 terminate()
@@ -97,7 +100,7 @@ def update():    # цикл...
 
             pygame.mouse.set_visible(False)
 
-    general.screen.fill(pygame.Color((255, 255, 255)))
+    general.screen.fill(pygame.Color((0, 0, 0)))
 
     player.move(direction)  # Движения перса в направлении direction
     general.all_sprites.update()
