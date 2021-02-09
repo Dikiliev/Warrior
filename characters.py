@@ -4,7 +4,7 @@ import general
 
 
 class Character(Sprite):    # Класс перса
-    def __init__(self, image, transform, group=None, hp=100, speed=400, jump_force=1150):
+    def __init__(self, image, transform, group=None, hp=100, speed=500, jump_force=1350):
         self.rb = None
         self.animator = None
         self.is_grounded = False
