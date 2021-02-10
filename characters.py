@@ -5,7 +5,7 @@ import general
 
 class Character(Sprite):    # Класс перса
     def __init__(self, image, transform, group=None, hp=100, speed=500, jump_force=1350):
-        self.rb = None
+        self.rb = RigidBody()
         self.animator = None
         self.is_grounded = False
         self.is_flip = False
@@ -19,9 +19,6 @@ class Character(Sprite):    # Класс перса
         self.weapon = None
 
         self.orig_img = self.image.copy()
-
-    def add_RigidBody(self, rb):    # Добавления физики
-        self.rb = rb
 
     def set_animation(self, animation):
         self.animation = animation
