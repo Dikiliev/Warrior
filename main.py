@@ -1,7 +1,7 @@
 import general
 from general import load_image
 from components import Camera, RigidBody, Transform, Background, Animator
-from characters import Character, Weapon
+from characters import Character, Weapon, Enemy
 import pygame
 import sys
 
@@ -44,6 +44,10 @@ def start():
 
     player = Character(general.load_image('Pers/Idle.png'), Transform((100, 100)), group=general.player_group)
     general.player = player
+
+    enemy_1 = Enemy(general.load_image('Pers/Idle.png'), Transform((500, 100)))
+    enemy_1.weapon = Weapon('ak_47', enemy_1.transform_, general.player_group)
+    enemy_1.animator = Animator('Pers')
 
     camera = Camera(Transform((0, 0), parent=player.transform_), offset=(-900, -540))
     general.camera = camera
@@ -106,7 +110,9 @@ def update():    # цикл...
     general.all_sprites.update()
 
     if is_player_attack:
-        player.weapon.shoot(pygame.mouse.get_pos())
+        pos = pygame.mouse.get_pos()
+        pos = (pos[0] + general.camera.transform_.x(), pos[1] + general.camera.transform_.y())
+        player.weapon.shoot(pos)
 
     general.all_sprites.draw(general.screen)
 

@@ -1,7 +1,7 @@
 import pygame
 from components import Transform, Sprite, RigidBody
 import general
-
+from random import random
 
 class Character(Sprite):    # Класс перса
     def __init__(self, image, transform, group=None, hp=100, speed=500, jump_force=1350):
@@ -117,11 +117,22 @@ class Character(Sprite):    # Класс перса
 class Enemy(Character):
     def __init__(self, image, transform, hp=100, speed=500, jump_force=1350, radius=1000):
         super().__init__(image, transform, general.enemy_group, hp, speed, jump_force)
+        self.is_attack = 0
+        self.time = 0
 
     def update(self):
         distance = abs(general.player.transform_.x() - self.transform_.x())
-        self.weapon.shoot(general.player.transform_.int_pos())
-        super().update()
+        self.time -= 1 / general.FPS
+        if self.time <= 0:
+            self.is_attack ^= 1
+            if self.is_attack:
+                self.time = random() * 0.5
+            else:
+                self.time = random() * 3
+        if self.is_attack:
+            pos = general.player.transform_.int_pos()
+            pos = [pos[0] + 40, pos[1] + 40]
+            self.weapon.shoot(pos)
 
 
 class Weapon(Sprite):    # Класс оружия (недоработан!)
@@ -155,8 +166,8 @@ class Weapon(Sprite):    # Класс оружия (недоработан!)
         s = Bullet(self.bullet, Transform(self.transform_.global_pos() + self.spawn_pos), general.player_group)
         s.speed = self.options['speed']
 
-        direction = (pos[0] - self.transform_.x() + general.camera.transform_.x() - self.spawn_pos[0],
-                     pos[1] - self.transform_.y() + general.camera.transform_.y() - self.spawn_pos[1])
+        direction = (pos[0] - self.transform_.x() - self.spawn_pos[0],
+                     pos[1] - self.transform_.y() - self.spawn_pos[1])
 
         maxx = max(map(lambda x: abs(x), direction))
         s.rb.velocity.x = s.speed * direction[0] / maxx
@@ -171,7 +182,7 @@ class Weapon(Sprite):    # Класс оружия (недоработан!)
 
 
 class Bullet(Sprite):    # Класс сюрикена, только его пока нету)))
-    def __init__(self, image, transform, group=None, speed=1500, damage=25):
+    def __init__(self, image, transform, speed=1500, damage=25):
         self.rb = RigidBody()
         self.rb.gravity = 0
 
