@@ -32,6 +32,7 @@ def start_screen():    # Выполняется до начала игры
 camera = None
 cursor = None
 player = None
+is_player_attack = False
 
 
 def start():
@@ -42,6 +43,7 @@ def start():
     general.load_map()
 
     player = Character(general.load_image('Pers/Idle.png'), Transform((100, 100)), group=general.player_group)
+    general.player = player
 
     camera = Camera(Transform((0, 0), parent=player.transform_), offset=(-900, -540))
     general.camera = camera
@@ -59,7 +61,7 @@ mouse_pos = (0, 0)
 
 
 def update():    # цикл...
-    global direction, mouse_pos
+    global direction, mouse_pos, is_player_attack
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             terminate()
@@ -81,11 +83,11 @@ def update():    # цикл...
 
         if event.type == pygame.MOUSEBUTTONDOWN:
             if event.button == 1:
-                player.weapon.attack = True
+                is_player_attack = True
 
         if event.type == pygame.MOUSEBUTTONUP:
             if event.button == 1:
-                player.weapon.attack = False
+                is_player_attack = False
 
         if event.type == pygame.MOUSEMOTION:
             mouse_pos = event.pos
@@ -102,6 +104,10 @@ def update():    # цикл...
 
     player.move(direction)  # Движения перса в направлении direction
     general.all_sprites.update()
+
+    if is_player_attack:
+        player.weapon.shoot(pygame.mouse.get_pos())
+
     general.all_sprites.draw(general.screen)
 
     pygame.display.flip()

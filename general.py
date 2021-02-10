@@ -1,5 +1,6 @@
 import pygame
 from components import Transform, Camera, Sprite
+from characters import Character
 import os
 
 
@@ -12,8 +13,6 @@ enemy_group = pygame.sprite.Group()
 borders_group = pygame.sprite.Group()
 traps_group = pygame.sprite.Group()
 buttons_group = pygame.sprite.Group()
-
-camera = Camera(Transform((0, 0)))
 
 pygame.init()
 screen = pygame.display.set_mode(size)
@@ -59,6 +58,9 @@ def cut_sheet(sheet, columns, rows, custom=False):
 
 weapons = cut_sheet(load_image('Weapons.png'), 1, 3)
 bullets = cut_sheet(load_image('Bullets.png'), 1, 3)
+
+camera = Camera(Transform((0, 0)))
+player = None
 
 
 KEY_PLATFORM = {'up left': 0,   'up': 1,   'up right': 2,

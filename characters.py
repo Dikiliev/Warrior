@@ -115,12 +115,17 @@ class Character(Sprite):    # Класс перса
 
 
 class Enemy(Character):
-    def __init__(self, image, transform, hp=100, speed=500, jump_force=1350):
+    def __init__(self, image, transform, hp=100, speed=500, jump_force=1350, radius=1000):
         super().__init__(image, transform, general.enemy_group, hp, speed, jump_force)
+
+    def update(self):
+        distance = abs(general.player.transform_.x() - self.transform_.x())
+        self.weapon.shoot(general.player.transform_.int_pos())
+        super().update()
 
 
 class Weapon(Sprite):    # Класс оружия (недоработан!)
-    def __init__(self, name, parent=None, group=None):
+    def __init__(self, name, parent=None, group=None, radius=1000):
         self.options = eval(open(f'data/Weapons/{name}.txt', 'r').read())
 
         super().__init__(general.weapons[self.options['img']], Transform(self.options['pos'], parent=parent), group)
@@ -144,13 +149,14 @@ class Weapon(Sprite):    # Класс оружия (недоработан!)
             self.transform_.pos = pygame.math.Vector2(self.options['pos'])
             self.spawn_pos = self.options['spawn']
 
-    def shoot(self):
-        mouse_pos = pygame.mouse.get_pos()
+    def shoot(self, pos):
+        if self.next_shot > 0:
+            return
         s = Bullet(self.bullet, Transform(self.transform_.global_pos() + self.spawn_pos), general.player_group)
         s.speed = self.options['speed']
 
-        direction = (mouse_pos[0] - self.transform_.x() + general.camera.transform_.x() - self.spawn_pos[0],
-                     mouse_pos[1] - self.transform_.y() + general.camera.transform_.y() - self.spawn_pos[1])
+        direction = (pos[0] - self.transform_.x() + general.camera.transform_.x() - self.spawn_pos[0],
+                     pos[1] - self.transform_.y() + general.camera.transform_.y() - self.spawn_pos[1])
 
         maxx = max(map(lambda x: abs(x), direction))
         s.rb.velocity.x = s.speed * direction[0] / maxx
@@ -162,9 +168,6 @@ class Weapon(Sprite):    # Класс оружия (недоработан!)
         super().update()
         if self.next_shot > 0:
             self.next_shot -= 1 / general.FPS
-
-        elif self.attack:
-            self.shoot()
 
 
 class Bullet(Sprite):    # Класс сюрикена, только его пока нету)))
