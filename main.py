@@ -46,8 +46,6 @@ def start():
     camera = Camera(Transform((0, 0), parent=player.transform_), offset=(-900, -540))
     general.camera = camera
 
-    rb = RigidBody()
-    player.add_RigidBody(rb)
     player.animator = Animator('Pers')
 
     weapon = Weapon('ak_47', player.transform_, general.player_group)
