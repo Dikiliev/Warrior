@@ -114,6 +114,11 @@ class Character(Sprite):    # Класс перса
         pass
 
 
+class Enemy(Character):
+    def __init__(self, image, transform, hp=100, speed=500, jump_force=1350):
+        super().__init__(image, transform, general.enemy_group, hp, speed, jump_force)
+
+
 class Weapon(Sprite):    # Класс оружия (недоработан!)
     def __init__(self, name, parent=None, group=None):
         self.options = eval(open(f'data/Weapons/{name}.txt', 'r').read())
