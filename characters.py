@@ -119,8 +119,9 @@ class Enemy(Character):
         super().__init__(image, transform, general.enemy_group, hp, speed, jump_force)
         self.is_attack = 0
         self.time = 0
-        self.start_x = self.transform_.x()
-        self.radius_patrol = radius
+
+        self.max_x = self.transform_.x() + radius
+        self.min_x = self.transform_.x() - radius
         self.direction = [-1, 1][randrange(0, 2)]
 
     def update(self):
@@ -133,6 +134,16 @@ class Enemy(Character):
         super().update()
 
     def attacking(self):
+        pos = general.player.transform_.int_pos()
+        pos = [pos[0] + 40, pos[1] + 40]
+
+        if pos[0] > self.transform_.x() + 40 + 100 < self.max_x:
+            self.is_flip = False
+            self.move(1)
+        elif pos[0] < self.transform_.x() + 40 - 100 > self.min_x:
+            self.move(-1)
+            self.is_flip = True
+
         self.time -= 1 / general.FPS
         if self.time <= 0:
             self.is_attack ^= 1
@@ -141,18 +152,15 @@ class Enemy(Character):
             else:
                 self.time = random() * 3
         if self.is_attack:
-            pos = general.player.transform_.int_pos()
-            pos = [pos[0] + 40, pos[1] + 40]
-            if pos[0] > self.transform_.x():
-                self.is_flip = False
-            else:
-                self.is_flip = True
+
             self.weapon.shoot(pos)
 
     def patrol(self):
-        if (self.transform_.x() >= self.start_x + self.radius_patrol) and self.direction == 1 or\
-                (self.transform_.x() <= self.start_x - self.radius_patrol) and self.direction == -1:
-            self.direction *= -1
+        if self.transform_.x() >= self.max_x:
+            self.direction = -1
+        elif self.transform_.x() <= self.min_x:
+            self.direction = 1
+
         self.is_flip = bool(self.direction - 1)
         self.move(self.direction)
 
