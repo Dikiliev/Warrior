@@ -1,7 +1,7 @@
 import pygame
 from components import Transform, Sprite, RigidBody
 import general
-from random import random
+from random import random, randrange
 
 class Character(Sprite):    # Класс перса
     def __init__(self, image, transform, group=None, hp=100, speed=500, jump_force=1350):
@@ -115,13 +115,24 @@ class Character(Sprite):    # Класс перса
 
 
 class Enemy(Character):
-    def __init__(self, image, transform, hp=100, speed=500, jump_force=1350, radius=1000):
+    def __init__(self, image, transform, hp=100, speed=500, jump_force=1350, radius=250):
         super().__init__(image, transform, general.enemy_group, hp, speed, jump_force)
         self.is_attack = 0
         self.time = 0
+        self.start_x = self.transform_.x()
+        self.radius_patrol = radius
+        self.direction = [-1, 1][randrange(0, 2)]
 
     def update(self):
         distance = abs(general.player.transform_.x() - self.transform_.x())
+        self.move(0)
+        if distance > 500:
+            self.patrol()
+        else:
+            self.attacking()
+        super().update()
+
+    def attacking(self):
         self.time -= 1 / general.FPS
         if self.time <= 0:
             self.is_attack ^= 1
@@ -132,7 +143,18 @@ class Enemy(Character):
         if self.is_attack:
             pos = general.player.transform_.int_pos()
             pos = [pos[0] + 40, pos[1] + 40]
+            if pos[0] > self.transform_.x():
+                self.is_flip = False
+            else:
+                self.is_flip = True
             self.weapon.shoot(pos)
+
+    def patrol(self):
+        if (self.transform_.x() >= self.start_x + self.radius_patrol) and self.direction == 1 or\
+                (self.transform_.x() <= self.start_x - self.radius_patrol) and self.direction == -1:
+            self.direction *= -1
+        self.is_flip = bool(self.direction - 1)
+        self.move(self.direction)
 
 
 class Weapon(Sprite):    # Класс оружия (недоработан!)

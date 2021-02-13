@@ -45,7 +45,7 @@ def start():
     player = Character(general.load_image('Pers/Idle.png'), Transform((100, 100)), group=general.player_group)
     general.player = player
 
-    enemy_1 = Enemy(general.load_image('Pers/Idle.png'), Transform((500, 100)))
+    enemy_1 = Enemy(general.load_image('Pers/Idle.png'), Transform((1200, 100)), speed=200)
     enemy_1.weapon = Weapon('ak_47', enemy_1.transform_, general.player_group)
     enemy_1.animator = Animator('Pers')
 
