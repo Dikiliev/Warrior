@@ -31,14 +31,14 @@ class Transform:    # Типа класс позиции и размера
 class RigidBody:    # Типа физика))
     def __init__(self):
         self.velocity = pygame.math.Vector2(0, 0)
-        self.gravity = 500
+        self.gravity = 800
 
     def addForce(self, force):    # пока не используется
         self.velocity += force
 
     def update(self):    # Вызывается каждый кадр
         if self.velocity.y < self.gravity:
-            self.velocity.y += self.gravity // 10
+            self.velocity.y += self.gravity // 15
             if self.velocity.y > self.gravity:
                 self.velocity.y = self.gravity
 

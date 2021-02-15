@@ -1,5 +1,6 @@
 import pygame
 from components import Transform, Camera, Sprite
+from characters import Character
 import os
 
 
@@ -12,8 +13,6 @@ enemy_group = pygame.sprite.Group()
 borders_group = pygame.sprite.Group()
 traps_group = pygame.sprite.Group()
 buttons_group = pygame.sprite.Group()
-
-camera = Camera(Transform((0, 0)))
 
 pygame.init()
 screen = pygame.display.set_mode(size)
@@ -60,18 +59,24 @@ def cut_sheet(sheet, columns, rows, custom=False):
 weapons = cut_sheet(load_image('Weapons.png'), 1, 3)
 bullets = cut_sheet(load_image('Bullets.png'), 1, 3)
 
+camera = Camera(Transform((0, 0)))
+player = None
+
 
 KEY_PLATFORM = {'up left': 0,   'up': 1,   'up right': 2,
                 'left': 4,      '': 4,    'right': -1,
                 'down left': 4, 'down': 4, 'down right': 5,
                 'descent': 3, '.': None,
                 'bridge left': 6, 'bridge': 7, 'bridge right': 8,
-                'thorns up': 9, 'thorns': 11, 'thorns down': 10}
+                'thorns up': 9, 'thorns': 11, 'thorns down': 10,
+                'iron left': 0, 'iron': 1, 'iron right': 2}
 
 
 map_txt = open('data/level.txt').read().split()
-frames = cut_sheet(load_image('platforms.png'), 3, 4)
-frames.append(cut_sheet(load_image('platforms.png'), 3, 4, (200, 80)))
+platforms = cut_sheet(load_image('platforms.png'), 3, 4)
+platforms.append(cut_sheet(load_image('platforms.png'), 3, 4, (200, 80)))
+
+irons = cut_sheet(load_image('platforms2.png'), 3, 1)
 
 
 def load_map():
@@ -80,7 +85,6 @@ def load_map():
             platform = map_txt[y][x]
             if platform == '#':
                 platform = '#-'
-                key = ''
 
                 key = up_or_down(x, y, platform)
                 key += ' ' + right_or_left(x, y, platform)
@@ -89,12 +93,17 @@ def load_map():
                         and map_txt[y - 1][x + 1] not in platform:
                     key = 'descent'
 
-                Sprite(frames[KEY_PLATFORM[key.strip(' ')]], Transform((x * 100, y * 100)), borders_group)
+                Sprite(platforms[KEY_PLATFORM[key.strip(' ')]], Transform((x * 100, y * 100)), borders_group)
 
             elif platform == '-':
                 key = 'bridge '
                 key += right_or_left(x, y, platform)
-                Sprite(frames[KEY_PLATFORM[key.strip(' ')]], Transform((x * 100, y * 100)), borders_group)
+                Sprite(platforms[KEY_PLATFORM[key.strip(' ')]], Transform((x * 100, y * 100)), borders_group)
+
+            elif platform == '=':
+                key = 'iron '
+                key += right_or_left(x, y, platform)
+                Sprite(irons[KEY_PLATFORM[key.strip(' ')]], Transform((x * 100, y * 100)), borders_group)
 
             elif platform == 't':
                 pass

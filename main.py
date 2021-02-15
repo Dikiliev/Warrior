@@ -1,7 +1,7 @@
 import general
 from general import load_image
 from components import Camera, RigidBody, Transform, Background, Animator
-from characters import Character, Weapon
+from characters import Character, Weapon, Enemy
 import pygame
 import sys
 
@@ -32,6 +32,7 @@ def start_screen():    # Выполняется до начала игры
 camera = None
 cursor = None
 player = None
+is_player_attack = False
 
 
 def start():
@@ -42,16 +43,19 @@ def start():
     general.load_map()
 
     player = Character(general.load_image('Pers/Idle.png'), Transform((100, 100)), group=general.player_group)
+    general.player = player
+
+    enemy_1 = Enemy(general.load_image('Pers/Idle.png'), Transform((1200, 100)), speed=200)
+    enemy_1.select_weapon(Weapon('ak_47', enemy_1.transform_))
+    enemy_1.animator = Animator('Pers')
 
     camera = Camera(Transform((0, 0), parent=player.transform_), offset=(-900, -540))
     general.camera = camera
 
-    rb = RigidBody()
-    player.add_RigidBody(rb)
     player.animator = Animator('Pers')
 
-    weapon = Weapon('ak_47', player.transform_, general.player_group)
-    player.weapon = weapon
+    weapon = Weapon('ak_47', player.transform_)
+    player.select_weapon(weapon)
 
     cursor = Background(load_image('cursor.png'), Transform((100, 100)))
 
@@ -61,7 +65,7 @@ mouse_pos = (0, 0)
 
 
 def update():    # цикл...
-    global direction, mouse_pos
+    global direction, mouse_pos, is_player_attack
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             terminate()
@@ -83,11 +87,11 @@ def update():    # цикл...
 
         if event.type == pygame.MOUSEBUTTONDOWN:
             if event.button == 1:
-                player.weapon.attack = True
+                is_player_attack = True
 
         if event.type == pygame.MOUSEBUTTONUP:
             if event.button == 1:
-                player.weapon.attack = False
+                is_player_attack = False
 
         if event.type == pygame.MOUSEMOTION:
             mouse_pos = event.pos
@@ -104,6 +108,12 @@ def update():    # цикл...
 
     player.move(direction)  # Движения перса в направлении direction
     general.all_sprites.update()
+
+    if is_player_attack:
+        pos = pygame.mouse.get_pos()
+        pos = (pos[0] + general.camera.transform_.x(), pos[1] + general.camera.transform_.y())
+        player.weapon.shoot(pos)
+
     general.all_sprites.draw(general.screen)
 
     pygame.display.flip()
