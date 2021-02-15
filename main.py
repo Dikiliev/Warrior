@@ -46,7 +46,7 @@ def start():
     general.player = player
 
     enemy_1 = Enemy(general.load_image('Pers/Idle.png'), Transform((1200, 100)), speed=200)
-    enemy_1.weapon = Weapon('ak_47', enemy_1.transform_, general.player_group)
+    enemy_1.select_weapon(Weapon('ak_47', enemy_1.transform_))
     enemy_1.animator = Animator('Pers')
 
     camera = Camera(Transform((0, 0), parent=player.transform_), offset=(-900, -540))
@@ -54,8 +54,8 @@ def start():
 
     player.animator = Animator('Pers')
 
-    weapon = Weapon('ak_47', player.transform_, general.player_group)
-    player.weapon = weapon
+    weapon = Weapon('ak_47', player.transform_)
+    player.select_weapon(weapon)
 
     cursor = Background(load_image('cursor.png'), Transform((100, 100)))
 
