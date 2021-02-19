@@ -104,6 +104,10 @@ def load_map():
                 key = 'iron '
                 key += right_or_left(x, y, platform)
                 Sprite(irons[KEY_PLATFORM[key.strip(' ')]], Transform((x * 100, y * 100)), borders_group)
+                if 'left' in key:
+                    Sprite(load_image('Tros.png'), Transform((x * 100 + 40, y * 100 - 2000)))
+                elif 'right' in key:
+                    Sprite(load_image('Tros.png'), Transform((x * 100 + 50, y * 100 - 2000)))
 
             elif platform == 't':
                 pass

@@ -5,9 +5,6 @@ from characters import Character, Weapon, Enemy
 import pygame
 import sys
 
-
-
-
 is_menu = True
 
 
@@ -45,9 +42,9 @@ def start():
     player = Character(general.load_image('Pers/Idle.png'), Transform((100, 100)), group=general.player_group)
     general.player = player
 
-    enemy_1 = Enemy(general.load_image('Pers/Idle.png'), Transform((1200, 100)), speed=200)
+    enemy_1 = Enemy(general.load_image('Enemy/Enemy1_Idle.png'), Transform((1200, 100)), speed=200, hp=500)
     enemy_1.select_weapon(Weapon('ak_47', enemy_1.transform_))
-    enemy_1.animator = Animator('Pers')
+    enemy_1.animator = Animator('Enem3')
 
     camera = Camera(Transform((0, 0), parent=player.transform_), offset=(-900, -540))
     general.camera = camera
