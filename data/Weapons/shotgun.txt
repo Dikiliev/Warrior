@@ -1,0 +1,10 @@
+{'name': 'shotgun.txt',
+'img': 2,
+'pos': (-10, 55),
+'pos_f': (-25, 55),
+'spawn': (110, 4),
+'spawn_f': (0, 4),
+'damage': 20,
+'rate_of': 2,
+'speed': 1500,
+'bullet': 2}

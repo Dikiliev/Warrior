@@ -218,6 +218,34 @@ class Weapon(Sprite):    # Класс оружия
             self.next_shot -= 1 / general.FPS
 
 
+class ShotGun(Weapon):
+    def shoot(self, pos):
+        if self.next_shot > 0:
+            return
+
+        bullets = [Bullet(self.bullet, Transform(self.transform_.global_pos() + self.spawn_pos), is_enemy=self.is_enemy)
+                   for _ in range(10)]
+
+        direction = (pos[0] - self.transform_.x() - self.spawn_pos[0],
+                     pos[1] - self.transform_.y() - self.spawn_pos[1])
+        max_ = max(map(lambda x: abs(x), direction))
+
+        print(bullets)
+        for i in range(len(bullets)):
+            bullets[i].speed = self.options['speed']
+
+            direc = 0
+            if i == 0:
+                direc = 0.2
+            elif i == 2:
+                direc = -0.2
+
+            bullets[i].rb.velocity.x = bullets[i].speed * (direction[0] / max_ + randrange(-3, 4) / 10)
+            bullets[i].rb.velocity.y = bullets[i].speed * (direction[1] / max_ + randrange(-3, 4) / 10)
+
+        self.next_shot = self.options['rate_of']
+
+
 class Bullet(Sprite):    # Класс сюрикена, только его пока нету)))
     def __init__(self, image, transform, speed=1500, damage=25, is_enemy=True):
         self.rb = RigidBody()

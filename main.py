@@ -1,7 +1,7 @@
 import general
 from general import load_image
 from components import Camera, RigidBody, Transform, Background, Animator
-from characters import Character, Weapon, Enemy
+from characters import Character, Weapon, ShotGun, Enemy
 import pygame
 import sys
 
@@ -51,7 +51,7 @@ def start():
 
     player.animator = Animator('Pers')
 
-    weapon = Weapon('ak_47', player.transform_)
+    weapon = ShotGun('shotgun', player.transform_)
     player.select_weapon(weapon)
 
     cursor = Background(load_image('cursor.png'), Transform((100, 100)))
