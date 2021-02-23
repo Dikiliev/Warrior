@@ -1,12 +1,9 @@
 import general
 from general import load_image
 from components import Camera, RigidBody, Transform, Background, Animator, Sprite, Button
-from characters import Character, Weapon, Enemy
+from characters import Character, Weapon, ShotGun Enemy
 import pygame
 import sys
-
-
-
 
 is_menu = True
 
@@ -63,16 +60,16 @@ def start():
     player = Character(general.load_image('Pers/Idle.png'), Transform((100, 100)), group=general.player_group)
     general.player = player
 
-    enemy_1 = Enemy(general.load_image('Pers/Idle.png'), Transform((1200, 100)), speed=200)
+    enemy_1 = Enemy(general.load_image('Enemy/Enemy1_Idle.png'), Transform((1200, 100)), speed=200, hp=500)
     enemy_1.select_weapon(Weapon('ak_47', enemy_1.transform_))
-    enemy_1.animator = Animator('Pers')
+    enemy_1.animator = Animator('Enem3')
 
     camera = Camera(Transform((0, 0), parent=player.transform_), offset=(-900, -540))
     general.camera = camera
 
     player.animator = Animator('Pers')
 
-    weapon = Weapon('ak_47', player.transform_)
+    weapon = ShotGun('shotgun', player.transform_)
     player.select_weapon(weapon)
 
     cursor = Background(load_image('cursor.png'), Transform((100, 100)))
