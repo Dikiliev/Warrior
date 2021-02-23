@@ -32,6 +32,7 @@ class Character(Sprite):    # Класс персонажа
         else:
             if self.can_pick_up is None:
                 return
+            self.weapon.throw_weapons()
             self.weapon = self.can_pick_up
             self.weapon.init_pos(self.transform_)
 
@@ -213,6 +214,10 @@ class Weapon(Sprite):    # Класс оружия
     def init_pos(self, parent):
         self.transform_.set_pos(self.options['pos'][0], self.options['pos'][1])
         self.transform_.parent = parent
+
+    def throw_weapons(self):
+        self.transform_.set_pos(self.transform_.x(), self.transform_.y())
+        self.transform_.parent = None
 
     def flip(self, is_flip):
         self.image = pygame.transform.flip(self.orig_img, is_flip, False)
