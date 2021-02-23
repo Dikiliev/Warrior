@@ -128,3 +128,16 @@ class Animator:
 
     def update(self):
         self.current_ani.update()
+
+
+class Button(Sprite):
+    def __init__(self, image, transform, func, group=None):
+        super().__init__(image, transform, group)
+        self.func = func
+
+    def update(self, pos=None):
+        if pos is None:
+            return
+        if self.rect.x <= pos[0] <= self.rect.x + self.rect.width and \
+                self.rect.y <= pos[1] <= self.rect.y + self.rect.height:
+            self.func()
