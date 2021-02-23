@@ -1,6 +1,6 @@
 import general
 from general import load_image
-from components import Camera, RigidBody, Transform, Background, Animator
+from components import Camera, RigidBody, Transform, Background, Animator, Sprite, Button
 from characters import Character, Weapon, Enemy
 import pygame
 import sys
@@ -22,11 +22,29 @@ def start_game():    # Начало игра (закрытие меню)
 
 
 def start_screen():    # Выполняется до начала игры
-    return
+    # создание кнопок
+    menu_buttons = [Sprite(general.load_image('fon.jpg'), Transform((0, 0))),
+                    Sprite(general.load_image('Title.jpg'), Transform((710, 80))),
+                    Button(general.load_image('btn_start.png'), Transform((710, 500)), start_game,
+                           general.buttons_group),
+                    Button(general.load_image('btn_exit.png'), Transform((760, 700)), terminate,
+                           general.buttons_group)]
     while is_menu:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 terminate()
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                general.buttons_group.update(event.pos)
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    terminate()
+        general.all_sprites.update()
+        general.all_sprites.draw(general.screen)
+        pygame.display.flip()
+        general.clock.tick(general.FPS)
+    # удаление кнопок
+    for btn in menu_buttons:
+        btn.kill()
 
 
 camera = None
@@ -121,6 +139,7 @@ def update():    # цикл...
 
 
 if __name__ == '__main__':
+    start_screen()
     start()    # Вызов старта
     while True:
         update()    # цикл...
