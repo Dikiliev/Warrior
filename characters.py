@@ -40,7 +40,6 @@ class Character(Sprite):    # Класс персонажа
             self.weapon.is_enemy = False
 
     def take_damage(self, damage):   # Получение урона
-        print('damage ' + str(damage))
         self.hp -= damage
         if self.hp <= 0:
             self.hp = 0
@@ -115,7 +114,6 @@ class Character(Sprite):    # Класс персонажа
         if weapons:
             for weapon in weapons:
                 if weapon.transform_.parent is None:
-                    print(weapon.options['name'])
                     self.can_pick_up = weapon
                     break
 
@@ -191,35 +189,35 @@ class Enemy(Character):    # Класс Врага
 
 class Weapon(Sprite):    # Класс оружия
     def __init__(self, name, parent=None, radius=1000, pos=None):
-        self.options = eval(open(f'data/Weapons/{name}.txt', 'r').read())
+        self.options = eval(open(f'data/Weapons/{name}.txt', 'r').read())   # Все параметры оружия
 
-        if parent is not None:
+        if parent is not None:  # Если родитель есть
             super().__init__(general.weapons[self.options['img']],
                              Transform(self.options['pos'], parent=parent), general.weapons_group)
-        else:
+        else:  # Иначе присваваем transform позицию
             super().__init__(general.weapons[self.options['img']],
                              Transform(pos, parent=None), general.weapons_group)
 
         self.options['bullet'] = general.bullets[self.options['bullet']]
 
-        self.spawn_pos = self.options['spawn']
+        self.spawn_pos = self.options['spawn']  # Точка появления пули
         self.orig_img = self.image.copy()
-        self.bullet = self.options['bullet'].copy()
+        self.bullet = self.options['bullet'].copy()   # пуля
 
         self.attack = False
-        self.next_shot = 0
+        self.shot_timer = 0  # таймер следущего выстрела (скорострельность)
 
         self.is_enemy = True
 
-    def init_pos(self, parent):
+    def init_pos(self, parent):  # Настройка после подбора
         self.transform_.set_pos(self.options['pos'][0], self.options['pos'][1])
         self.transform_.parent = parent
 
-    def throw_weapons(self):
+    def throw_weapons(self):  # Настройка после выброса
         self.transform_.set_pos(self.transform_.x(), self.transform_.y())
         self.transform_.parent = None
 
-    def flip(self, is_flip):
+    def flip(self, is_flip):  # Вращение
         self.image = pygame.transform.flip(self.orig_img, is_flip, False)
         self.bullet = pygame.transform.flip(self.options['bullet'], is_flip, False)
         if is_flip:
@@ -229,54 +227,53 @@ class Weapon(Sprite):    # Класс оружия
             self.transform_.pos = pygame.math.Vector2(self.options['pos'])
             self.spawn_pos = self.options['spawn']
 
-    def shoot(self, pos):
-        if self.next_shot > 0:
+    def shoot(self, pos):  # Выстрел
+        if self.shot_timer > 0:
             return
 
-        s = Bullet(self.bullet, Transform(self.transform_.global_pos() + self.spawn_pos), is_enemy=self.is_enemy)
-        s.speed = self.options['speed']
+        # Создание и передача параметров в пулю
+        bullet = Bullet(self.bullet, Transform(self.transform_.global_pos() + self.spawn_pos), is_enemy=self.is_enemy)
+        bullet.speed = self.options['speed']
 
         direction = (pos[0] - self.transform_.x() - self.spawn_pos[0],
                      pos[1] - self.transform_.y() - self.spawn_pos[1])
 
-        maxx = max(map(lambda x: abs(x), direction))
-        s.rb.velocity.x = s.speed * direction[0] / maxx
-        s.rb.velocity.y = s.speed * direction[1] / maxx
+        max_ = max(map(lambda x: abs(x), direction))    # Максимальное модульное значение
 
-        self.next_shot = self.options['rate_of']
+        # Направление пули
+        bullet.rb.velocity.x = bullet.speed * direction[0] / max_
+        bullet.rb.velocity.y = bullet.speed * direction[1] / max_
+
+        self.shot_timer = self.options['rate_of']    # Обновление таймера
 
     def update(self):
         super().update()
-        if self.next_shot > 0:
-            self.next_shot -= 1 / general.FPS
+        if self.shot_timer > 0:
+            self.shot_timer -= 1 / general.FPS
 
 
-class ShotGun(Weapon):
+class ShotGun(Weapon):  # класс дробовика
     def shoot(self, pos):
-        if self.next_shot > 0:
+        if self.shot_timer > 0:
             return
 
+        # Создание пуль
         bullets = [Bullet(self.bullet, Transform(self.transform_.global_pos() + self.spawn_pos), is_enemy=self.is_enemy)
                    for _ in range(10)]
 
+        # Направление
         direction = (pos[0] - self.transform_.x() - self.spawn_pos[0],
                      pos[1] - self.transform_.y() - self.spawn_pos[1])
         max_ = max(map(lambda x: abs(x), direction))
 
-        print(bullets)
         for i in range(len(bullets)):
             bullets[i].speed = self.options['speed']
 
-            direc = 0
-            if i == 0:
-                direc = 0.2
-            elif i == 2:
-                direc = -0.2
-
+            # Рандомное измение направления пули
             bullets[i].rb.velocity.x = bullets[i].speed * (direction[0] / max_ + randrange(-3, 4) / 10)
             bullets[i].rb.velocity.y = bullets[i].speed * (direction[1] / max_ + randrange(-3, 4) / 10)
 
-        self.next_shot = self.options['rate_of']
+        self.shot_timer = self.options['rate_of']  # Обновление таймера
 
 
 class Bullet(Sprite):    # Класс сюрикена, только его пока нету)))
