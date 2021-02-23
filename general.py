@@ -13,6 +13,7 @@ enemy_group = pygame.sprite.Group()
 borders_group = pygame.sprite.Group()
 traps_group = pygame.sprite.Group()
 buttons_group = pygame.sprite.Group()
+weapons_group = pygame.sprite.Group()
 
 pygame.init()
 screen = pygame.display.set_mode(size)

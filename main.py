@@ -1,7 +1,7 @@
 import general
 from general import load_image
 from components import Camera, RigidBody, Transform, Background, Animator, Sprite, Button
-from characters import Character, Weapon, ShotGun Enemy
+from characters import Character, Weapon, ShotGun, Enemy
 import pygame
 import sys
 
@@ -72,6 +72,8 @@ def start():
     weapon = ShotGun('shotgun', player.transform_)
     player.select_weapon(weapon)
 
+    weapon = Weapon('ak_47', pos=(400, 950))
+
     cursor = Background(load_image('cursor.png'), Transform((100, 100)))
 
 
@@ -93,6 +95,8 @@ def update():    # цикл...
                 player.jump()
             elif event.key == pygame.K_ESCAPE:
                 terminate()
+            elif event.key == pygame.K_e:
+                general.player.select_weapon()
 
         if event.type == pygame.KEYUP:
             if event.key in (pygame.K_RIGHT, pygame.K_d) and direction == 1:

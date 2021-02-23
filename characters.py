@@ -21,11 +21,20 @@ class Character(Sprite):    # Класс персонажа
 
         self.orig_img = self.image.copy()
 
+        self.can_pick_up = None
+
     def set_animation(self, animation):   # Смена анимации
         self.animation = animation
 
-    def select_weapon(self, weapon):    # Выбов оружия
-        self.weapon = weapon
+    def select_weapon(self, weapon=None):    # Выбов оружия
+        if weapon is not None:
+            self.weapon = weapon
+        else:
+            if self.can_pick_up is None:
+                return
+            self.weapon = self.can_pick_up
+            self.weapon.init_pos(self.transform_)
+
         if general.player_group in self.groups():
             self.weapon.is_enemy = False
 
@@ -99,7 +108,17 @@ class Character(Sprite):    # Класс персонажа
                         #   сдвиг перса (если он немного зашел в стену)
                         self.transform_.pos.x = coll.transform_.x() + coll.rect.width - 1
 
-            self.transform_.pos += (self.rb.velocity / general.FPS)    # Движение
+        # Оружие с которым сталкивается перс
+        weapons = pygame.sprite.spritecollide(self, general.weapons_group, False)
+        self.can_pick_up = None
+        if weapons:
+            for weapon in weapons:
+                if weapon.transform_.parent is None:
+                    print(weapon.options['name'])
+                    self.can_pick_up = weapon
+                    break
+
+        self.transform_.pos += (self.rb.velocity / general.FPS)    # Движение
         super().update()
 
     def move(self, direction):    # Движение и смена анимации
@@ -170,10 +189,15 @@ class Enemy(Character):    # Класс Врага
 
 
 class Weapon(Sprite):    # Класс оружия
-    def __init__(self, name, parent=None, radius=1000):
+    def __init__(self, name, parent=None, radius=1000, pos=None):
         self.options = eval(open(f'data/Weapons/{name}.txt', 'r').read())
 
-        super().__init__(general.weapons[self.options['img']], Transform(self.options['pos'], parent=parent))
+        if parent is not None:
+            super().__init__(general.weapons[self.options['img']],
+                             Transform(self.options['pos'], parent=parent), general.weapons_group)
+        else:
+            super().__init__(general.weapons[self.options['img']],
+                             Transform(pos, parent=None), general.weapons_group)
 
         self.options['bullet'] = general.bullets[self.options['bullet']]
 
@@ -185,6 +209,10 @@ class Weapon(Sprite):    # Класс оружия
         self.next_shot = 0
 
         self.is_enemy = True
+
+    def init_pos(self, parent):
+        self.transform_.set_pos(self.options['pos'][0], self.options['pos'][1])
+        self.transform_.parent = parent
 
     def flip(self, is_flip):
         self.image = pygame.transform.flip(self.orig_img, is_flip, False)
