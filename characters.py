@@ -280,3 +280,5 @@ class Bullet(Sprite):    # Класс сюрикена, только его по
             self.transform_.pos += (self.rb.velocity / general.FPS)  # меняем позицию перса
 
         super().update()
+
+
