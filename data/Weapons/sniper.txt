@@ -1,0 +1,11 @@
+{'name': 'sniper',
+'img': 6,
+'pos': (-10, 55),
+'pos_f': (-25, 55),
+'spawn': (110, 10),
+'spawn_f': (-10, 10),
+'damage': 400,
+'rate_of': 3,
+'speed': 2000,
+'bullet': 1,
+'audio': 3}

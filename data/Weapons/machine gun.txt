@@ -1,0 +1,11 @@
+{'name': 'machine gun',
+'img': 7,
+'pos': (-10, 55),
+'pos_f': (-25, 55),
+'spawn': (100, 2),
+'spawn_f': (0, 2),
+'damage': 40,
+'rate_of': 0.2,
+'speed': 1500,
+'bullet': 0,
+'audio': 2}
