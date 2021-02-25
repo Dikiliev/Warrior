@@ -65,7 +65,13 @@ def start():
     weapon = Weapon('pistol', player.transform_)
     player.select_weapon(weapon)
 
-    Weapon('machine gun', pos=(400, 950))
+    Weapon('ak_47', pos=(400, 950))
+    Weapon('machine gun', pos=(500, 950))
+    Weapon('sniper', pos=(600, 1050))
+    Weapon('shotgun', pos=(700, 1050))
+    Weapon('rifle', pos=(300, 1050))
+    Weapon('p90', pos=(200, 1050))
+    Weapon('minigun', pos=(800, 1050))
 
     cursor = Background(load_image('cursor.png'), Transform((100, 100)))
 
