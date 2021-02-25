@@ -1,6 +1,6 @@
 import pygame
 from components import Transform, Camera, Sprite
-from characters import Character
+from characters import Character, Enemy
 import os
 
 
@@ -57,11 +57,17 @@ def cut_sheet(sheet, columns, rows, custom=False):
     return frames
 
 
-weapons = cut_sheet(load_image('Weapons.png'), 1, 3)
+weapons = cut_sheet(load_image('Weapons.png'), 1, 8)
 bullets = cut_sheet(load_image('Bullets.png'), 1, 3)
 
 camera = Camera(Transform((0, 0)))
 player = None
+
+
+ENEMIES = [{'weapon': 'ak_47', 'animator': 'Enem1', 'hp': 300, 'radius': 200},
+           {'weapon': 'ak_47', 'animator': 'Enem2', 'hp': 600, 'radius': 400},
+           {'weapon': 'ak_47', 'animator': 'Enem3', 'hp': 1500, 'radius': 400},
+           {'weapon': 'ak_47', 'animator': 'Enem4', 'hp': 200, 'radius': 400}]
 
 
 KEY_PLATFORM = {'up left': 0,   'up': 1,   'up right': 2,
@@ -111,7 +117,7 @@ def load_map():
                     Sprite(load_image('Tros.png'), Transform((x * 100 + 50, y * 100 - 2000)))
 
             elif platform == 't':
-                pass
+                Enemy(load_image(''), Transform((x * 100, y * 100)), borders_group)
 
 
 def right_or_left(x, y, platform):

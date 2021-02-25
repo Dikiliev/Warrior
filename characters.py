@@ -1,18 +1,18 @@
 import pygame
-from components import Transform, Sprite, RigidBody
+from components import Transform, Sprite, RigidBody, Animator
 import general
 from random import random, randrange
 
 
 class Character(Sprite):    # Класс персонажа
-    def __init__(self, image, transform, group=None, hp=100, speed=500, jump_force=1350):
+    def __init__(self, animator_name, transform, group=None, hp=100, speed=500, jump_force=1350):
         self.rb = RigidBody()   # Физака
-        self.animator = None   # Контроллер Анимации
+        self.animator = Animator(animator_name)  # Контроллер Анимации
         self.is_grounded = False   # Флаг, находится ли перс на земле?
         self.is_flip = False   # Оцеркален ли перс?
         self.is_alive = True   # Флаг, жив ли перс?
 
-        super().__init__(image, transform, group)
+        super().__init__(self.animator.current_ani.image, transform, group)
 
         self.hp = hp   # Здоровье
         self.speed = speed   # Скорость
@@ -137,14 +137,17 @@ class Character(Sprite):    # Класс персонажа
 
 
 class Enemy(Character):    # Класс Врага
-    def __init__(self, image, transform, hp=100, speed=500, jump_force=1350, radius=250):
-        super().__init__(image, transform, general.enemy_group, hp, speed, jump_force)
+    def __init__(self, type_enemy, transform):
+        enemy = general.ENEMIES[type_enemy]
+        super().__init__(enemy['animator'], transform, general.enemy_group, hp=enemy['hp'], speed=200)
         self.is_attack = 0
         self.time = 0
 
-        self.max_x = self.transform_.x() + radius
-        self.min_x = self.transform_.x() - radius
+        self.max_x = self.transform_.x() + enemy['radius']
+        self.min_x = self.transform_.x() - enemy['radius']
         self.direction = [-1, 1][randrange(0, 2)]
+
+        self.select_weapon(Weapon(enemy['weapon'], self.transform_))
 
     def update(self):
         distance = abs(general.player.transform_.x() - self.transform_.x())
@@ -232,8 +235,8 @@ class Weapon(Sprite):    # Класс оружия
             return
 
         # Создание и передача параметров в пулю
-        bullet = Bullet(self.bullet, Transform(self.transform_.global_pos() + self.spawn_pos), is_enemy=self.is_enemy)
-        bullet.speed = self.options['speed']
+        bullet = Bullet(self.bullet, Transform(self.transform_.global_pos() + self.spawn_pos),
+                        self.options['speed'], self.options['damage'], self.is_enemy)
 
         direction = (pos[0] - self.transform_.x() - self.spawn_pos[0],
                      pos[1] - self.transform_.y() - self.spawn_pos[1])
@@ -258,8 +261,8 @@ class ShotGun(Weapon):  # класс дробовика
             return
 
         # Создание пуль
-        bullets = [Bullet(self.bullet, Transform(self.transform_.global_pos() + self.spawn_pos), is_enemy=self.is_enemy)
-                   for _ in range(10)]
+        bullets = [Bullet(self.bullet, Transform(self.transform_.global_pos() + self.spawn_pos),
+                          self.options['speed'], self.options['damage'], self.is_enemy) for _ in range(10)]
 
         # Направление
         direction = (pos[0] - self.transform_.x() - self.spawn_pos[0],

@@ -57,12 +57,10 @@ def start():
 
     general.load_map()
 
-    player = Character(general.load_image('Pers/Idle.png'), Transform((100, 100)), group=general.player_group)
+    player = Character('Pers', Transform((100, 100)), group=general.player_group)
     general.player = player
 
-    enemy_1 = Enemy(general.load_image('Enemy/Enemy1_Idle.png'), Transform((1200, 100)), speed=200, hp=500)
-    enemy_1.select_weapon(Weapon('ak_47', enemy_1.transform_))
-    enemy_1.animator = Animator('Enem3')
+    enemy_1 = Enemy(1, Transform((1200, 100)))
 
     camera = Camera(Transform((0, 0), parent=player.transform_), offset=(-900, -540))
     general.camera = camera
@@ -72,7 +70,7 @@ def start():
     weapon = ShotGun('shotgun', player.transform_)
     player.select_weapon(weapon)
 
-    weapon = Weapon('ak_47', pos=(400, 950))
+    weapon = Weapon('machine gun', pos=(400, 950))
 
     cursor = Background(load_image('cursor.png'), Transform((100, 100)))
 

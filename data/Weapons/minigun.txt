@@ -1,0 +1,10 @@
+{'name': 'minigun',
+'img': 4,
+'pos': (-10, 55),
+'pos_f': (-25, 55),
+'spawn': (110, 10),
+'spawn_f': (-10, 10),
+'damage': 30,
+'rate_of': 0.1,
+'speed': 1500,
+'bullet': 0}

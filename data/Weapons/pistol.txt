@@ -1,0 +1,10 @@
+{'name': 'pistol',
+'img': 3,
+'pos': (20, 55),
+'pos_f': (-45, 55),
+'spawn': (50, 2),
+'spawn_f': (40, 2),
+'damage': 40,
+'rate_of': 0.7,
+'speed': 1500,
+'bullet': 0}

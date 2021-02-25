@@ -1,0 +1,10 @@
+{'name': 'p90',
+'img': 5,
+'pos': (0, 45),
+'pos_f': (-25, 45),
+'spawn': (90, 14),
+'spawn_f': (15, 14),
+'damage': 20,
+'rate_of': 0.1,
+'speed': 1500,
+'bullet': 0}
