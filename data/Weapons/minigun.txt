@@ -7,4 +7,5 @@
 'damage': 30,
 'rate_of': 0.1,
 'speed': 1500,
-'bullet': 0}
+'bullet': 0,
+'audio': 1}

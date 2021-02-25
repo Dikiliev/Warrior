@@ -64,10 +64,11 @@ camera = Camera(Transform((0, 0)))
 player = None
 
 
-ENEMIES = [{'weapon': 'ak_47', 'animator': 'Enem1', 'hp': 300, 'radius': 200},
-           {'weapon': 'ak_47', 'animator': 'Enem2', 'hp': 600, 'radius': 400},
-           {'weapon': 'ak_47', 'animator': 'Enem3', 'hp': 1500, 'radius': 400},
-           {'weapon': 'ak_47', 'animator': 'Enem4', 'hp': 200, 'radius': 400}]
+ENEMIES = [{'weapon': 'sniper', 'animator': 'Enem1', 'hp': 300, 'radius': 200},
+           {'weapon': 'ak_47', 'animator': 'Enem2', 'hp': 600, 'radius': 200},
+           {'weapon': 'minigun', 'animator': 'Enem3', 'hp': 1500, 'radius': 200},
+           {'weapon': 'pistol', 'animator': 'Enem4', 'hp': 200, 'radius': 200},
+           {'weapon': 'shotgun', 'animator': 'Enem2', 'hp': 600, 'radius': 200}]
 
 
 KEY_PLATFORM = {'up left': 0,   'up': 1,   'up right': 2,
@@ -84,6 +85,12 @@ platforms = cut_sheet(load_image('platforms.png'), 3, 4)
 platforms.append(cut_sheet(load_image('platforms.png'), 3, 4, (200, 80)))
 
 irons = cut_sheet(load_image('platforms2.png'), 3, 1)
+
+Sound = pygame.mixer.Sound
+SOUND_HIT = Sound('data/Audio/hit.mp3')
+SOUNDS = [Sound('data/Audio/pistol.mp3'), Sound('data/Audio/gun.mp3'),
+          Sound('data/Audio/machine_gun.mp3'), Sound('data/Audio/sniper.mp3'),
+          Sound('data/Audio/psg.mp3'), Sound('data/Audio/shotgun.mp3')]
 
 
 def load_map():

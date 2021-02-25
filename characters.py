@@ -5,7 +5,7 @@ from random import random, randrange
 
 
 class Character(Sprite):    # Класс персонажа
-    def __init__(self, animator_name, transform, group=None, hp=100, speed=500, jump_force=1350):
+    def __init__(self, animator_name, transform, group=None, hp=1000, speed=500, jump_force=1350):
         self.rb = RigidBody()   # Физака
         self.animator = Animator(animator_name)  # Контроллер Анимации
         self.is_grounded = False   # Флаг, находится ли перс на земле?
@@ -40,6 +40,7 @@ class Character(Sprite):    # Класс персонажа
             self.weapon.is_enemy = False
 
     def take_damage(self, damage):   # Получение урона
+        general.SOUND_HIT.play()    # Звук попадения
         self.hp -= damage
         if self.hp <= 0:
             self.hp = 0
@@ -140,17 +141,17 @@ class Enemy(Character):    # Класс Врага
     def __init__(self, type_enemy, transform):
         enemy = general.ENEMIES[type_enemy]
         super().__init__(enemy['animator'], transform, general.enemy_group, hp=enemy['hp'], speed=200)
-        self.is_attack = 0
-        self.time = 0
+        self.is_attack = 0  # Атакует ли враг (используется как bool)
+        self.time = 0  # время
 
         self.max_x = self.transform_.x() + enemy['radius']
         self.min_x = self.transform_.x() - enemy['radius']
-        self.direction = [-1, 1][randrange(0, 2)]
+        self.direction = [-1, 1][randrange(0, 2)]  # направление
 
-        self.select_weapon(Weapon(enemy['weapon'], self.transform_))
+        self.select_weapon(Weapon(enemy['weapon'], self.transform_))  # выьор оружия
 
     def update(self):
-        distance = abs(general.player.transform_.x() - self.transform_.x())
+        distance = abs(general.player.transform_.x() - self.transform_.x())  # дистанция до игрока
         self.move(0)
         if distance > 500:
             self.patrol()
@@ -158,7 +159,7 @@ class Enemy(Character):    # Класс Врага
             self.attacking()
         super().update()
 
-    def attacking(self):
+    def attacking(self):  # Атака на игрока
         pos = general.player.transform_.int_pos()
         pos = [pos[0] + 40, pos[1] + 40]
 
@@ -180,7 +181,7 @@ class Enemy(Character):    # Класс Врага
 
             self.weapon.shoot(pos)
 
-    def patrol(self):
+    def patrol(self):  # Патрулирование
         if self.transform_.x() >= self.max_x:
             self.direction = -1
         elif self.transform_.x() <= self.min_x:
@@ -234,18 +235,30 @@ class Weapon(Sprite):    # Класс оружия
         if self.shot_timer > 0:
             return
 
-        # Создание и передача параметров в пулю
-        bullet = Bullet(self.bullet, Transform(self.transform_.global_pos() + self.spawn_pos),
-                        self.options['speed'], self.options['damage'], self.is_enemy)
+        general.SOUNDS[self.options['audio']].play()    # Звук
 
         direction = (pos[0] - self.transform_.x() - self.spawn_pos[0],
                      pos[1] - self.transform_.y() - self.spawn_pos[1])
 
-        max_ = max(map(lambda x: abs(x), direction))    # Максимальное модульное значение
+        max_ = max(map(lambda x: abs(x), direction))  # Максимальное модульное значение
 
-        # Направление пули
-        bullet.rb.velocity.x = bullet.speed * direction[0] / max_
-        bullet.rb.velocity.y = bullet.speed * direction[1] / max_
+        if 'shotgun' in self.options['name']:
+            # Создание и передача параметров пули
+            bullets = [Bullet(self.bullet, Transform(self.transform_.global_pos() + self.spawn_pos),
+                              self.options['speed'], self.options['damage'], self.is_enemy) for _ in range(10)]
+
+            for i in range(len(bullets)):
+                # Рандомное измение направления пули
+                bullets[i].rb.velocity.x = bullets[i].speed * (direction[0] / max_ + randrange(-3, 4) / 10)
+                bullets[i].rb.velocity.y = bullets[i].speed * (direction[1] / max_ + randrange(-3, 4) / 10)
+        else:
+            # Создание и передача параметров в пулю
+            bullet = Bullet(self.bullet, Transform(self.transform_.global_pos() + self.spawn_pos),
+                            self.options['speed'], self.options['damage'], self.is_enemy)
+
+            # Направление пули
+            bullet.rb.velocity.x = bullet.speed * direction[0] / max_
+            bullet.rb.velocity.y = bullet.speed * direction[1] / max_
 
         self.shot_timer = self.options['rate_of']    # Обновление таймера
 
@@ -253,30 +266,6 @@ class Weapon(Sprite):    # Класс оружия
         super().update()
         if self.shot_timer > 0:
             self.shot_timer -= 1 / general.FPS
-
-
-class ShotGun(Weapon):  # класс дробовика
-    def shoot(self, pos):
-        if self.shot_timer > 0:
-            return
-
-        # Создание пуль
-        bullets = [Bullet(self.bullet, Transform(self.transform_.global_pos() + self.spawn_pos),
-                          self.options['speed'], self.options['damage'], self.is_enemy) for _ in range(10)]
-
-        # Направление
-        direction = (pos[0] - self.transform_.x() - self.spawn_pos[0],
-                     pos[1] - self.transform_.y() - self.spawn_pos[1])
-        max_ = max(map(lambda x: abs(x), direction))
-
-        for i in range(len(bullets)):
-            bullets[i].speed = self.options['speed']
-
-            # Рандомное измение направления пули
-            bullets[i].rb.velocity.x = bullets[i].speed * (direction[0] / max_ + randrange(-3, 4) / 10)
-            bullets[i].rb.velocity.y = bullets[i].speed * (direction[1] / max_ + randrange(-3, 4) / 10)
-
-        self.shot_timer = self.options['rate_of']  # Обновление таймера
 
 
 class Bullet(Sprite):    # Класс сюрикена, только его пока нету)))

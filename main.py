@@ -1,7 +1,7 @@
 import general
 from general import load_image
 from components import Camera, RigidBody, Transform, Background, Animator, Sprite, Button
-from characters import Character, Weapon, ShotGun, Enemy
+from characters import Character, Weapon, Enemy
 import pygame
 import sys
 
@@ -44,33 +44,28 @@ def start_screen():    # Выполняется до начала игры
         btn.kill()
 
 
-camera = None
 cursor = None
-player = None
 is_player_attack = False
 
 
 def start():
     global cursor
-    global camera
-    global player
 
     general.load_map()
 
     player = Character('Pers', Transform((100, 100)), group=general.player_group)
     general.player = player
 
-    enemy_1 = Enemy(1, Transform((1200, 100)))
+    Enemy(4, Transform((1200, 100)))
 
-    camera = Camera(Transform((0, 0), parent=player.transform_), offset=(-900, -540))
-    general.camera = camera
+    general.camera = Camera(Transform((0, 0), parent=player.transform_), offset=(-900, -540))
 
     player.animator = Animator('Pers')
 
-    weapon = ShotGun('shotgun', player.transform_)
+    weapon = Weapon('pistol', player.transform_)
     player.select_weapon(weapon)
 
-    weapon = Weapon('machine gun', pos=(400, 950))
+    Weapon('machine gun', pos=(400, 950))
 
     cursor = Background(load_image('cursor.png'), Transform((100, 100)))
 
@@ -90,7 +85,7 @@ def update():    # цикл...
             elif event.key in (pygame.K_LEFT, pygame.K_a):
                 direction = -1
             elif event.key in (pygame.K_UP, pygame.K_w, pygame.K_SPACE):
-                player.jump()
+                general.player.jump()
             elif event.key == pygame.K_ESCAPE:
                 terminate()
             elif event.key == pygame.K_e:
@@ -113,23 +108,23 @@ def update():    # цикл...
         if event.type == pygame.MOUSEMOTION:
             mouse_pos = event.pos
             cursor.transform_.set_pos(mouse_pos[0] - 10, mouse_pos[1] - 10)
-            camera.transform_.pos = camera.offset + (cursor.transform_.pos - pygame.math.Vector2(960, 540)) * 0.2
+            general.camera.transform_.pos = general.camera.offset + (cursor.transform_.pos - pygame.math.Vector2(960, 540)) * 0.2
             if cursor.transform_.x() > 940:
-                player.is_flip = False
+                general.player.is_flip = False
             else:
-                player.is_flip = True
+                general.player.is_flip = True
 
             pygame.mouse.set_visible(False)
 
     general.screen.fill(pygame.Color((0, 0, 0)))
 
-    player.move(direction)  # Движения перса в направлении direction
+    general.player.move(direction)  # Движения перса в направлении direction
     general.all_sprites.update()
 
     if is_player_attack:
         pos = pygame.mouse.get_pos()
         pos = (pos[0] + general.camera.transform_.x(), pos[1] + general.camera.transform_.y())
-        player.weapon.shoot(pos)
+        general.player.weapon.shoot(pos)
 
     general.all_sprites.draw(general.screen)
 
