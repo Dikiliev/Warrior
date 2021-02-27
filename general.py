@@ -1,6 +1,6 @@
 import pygame
 from components import Transform, Camera, Sprite
-from characters import Character
+from characters import Character, Enemy
 import os
 
 
@@ -13,6 +13,7 @@ enemy_group = pygame.sprite.Group()
 borders_group = pygame.sprite.Group()
 traps_group = pygame.sprite.Group()
 buttons_group = pygame.sprite.Group()
+weapons_group = pygame.sprite.Group()
 
 pygame.init()
 screen = pygame.display.set_mode(size)
@@ -56,11 +57,18 @@ def cut_sheet(sheet, columns, rows, custom=False):
     return frames
 
 
-weapons = cut_sheet(load_image('Weapons.png'), 1, 3)
+weapons = cut_sheet(load_image('Weapons.png'), 1, 8)
 bullets = cut_sheet(load_image('Bullets.png'), 1, 3)
 
 camera = Camera(Transform((0, 0)))
 player = None
+
+
+ENEMIES = [{'weapon': 'sniper', 'animator': 'Enem1', 'hp': 300, 'radius': 200},
+           {'weapon': 'ak_47', 'animator': 'Enem2', 'hp': 600, 'radius': 200},
+           {'weapon': 'minigun', 'animator': 'Enem3', 'hp': 1500, 'radius': 200},
+           {'weapon': 'pistol', 'animator': 'Enem4', 'hp': 200, 'radius': 200},
+           {'weapon': 'shotgun', 'animator': 'Enem2', 'hp': 600, 'radius': 200}]
 
 
 KEY_PLATFORM = {'up left': 0,   'up': 1,   'up right': 2,
@@ -77,6 +85,12 @@ platforms = cut_sheet(load_image('platforms.png'), 3, 4)
 platforms.append(cut_sheet(load_image('platforms.png'), 3, 4, (200, 80)))
 
 irons = cut_sheet(load_image('platforms2.png'), 3, 1)
+
+Sound = pygame.mixer.Sound
+SOUND_HIT = Sound('data/Audio/hit.mp3')
+SOUNDS = [Sound('data/Audio/pistol.mp3'), Sound('data/Audio/gun.mp3'),
+          Sound('data/Audio/machine_gun.mp3'), Sound('data/Audio/sniper.mp3'),
+          Sound('data/Audio/psg.mp3'), Sound('data/Audio/shotgun.mp3')]
 
 
 def load_map():
@@ -110,7 +124,7 @@ def load_map():
                     Sprite(load_image('Tros.png'), Transform((x * 100 + 50, y * 100 - 2000)))
 
             elif platform == 't':
-                pass
+                Enemy(load_image(''), Transform((x * 100, y * 100)), borders_group)
 
 
 def right_or_left(x, y, platform):
