@@ -22,6 +22,7 @@ class Character(Sprite):    # Класс персонажа
         self.orig_img = self.image.copy()
 
         self.can_pick_up = None
+        self.on_rope_stay = False
 
     def set_animation(self, animation):   # Смена анимации
         self.animation = animation
@@ -67,7 +68,12 @@ class Character(Sprite):    # Класс персонажа
             self.weapon.flip(self.is_flip)
             self.weapon.update()
 
-        if self.rb:
+        if pygame.sprite.spritecollideany(self, general.ropes_group):    # Проверка сталкивается ли перс с веревков
+
+            self.on_rope_stay = True
+        else:
+            self.on_rope_stay = False
+
             self.rb.update()
             colliders = pygame.sprite.spritecollide(self, general.borders_group, False)    # Все объекты с которыми сталкивается перс
 
@@ -121,7 +127,7 @@ class Character(Sprite):    # Класс персонажа
         self.transform_.pos += (self.rb.velocity / general.FPS)    # Движение
         super().update()
 
-    def move(self, direction):    # Движение и смена анимации
+    def move(self, direction, direction_y=0):    # Движение и смена анимации
         self.rb.velocity.x = direction * self.speed
         if direction < 0:
             self.animator.set_animation(1)
@@ -129,6 +135,9 @@ class Character(Sprite):    # Класс персонажа
             self.animator.set_animation(1)
         else:
             self.animator.set_animation(0)
+
+        if self.on_rope_stay:
+            self.rb.velocity.y = direction_y * self.speed
 
     def jump(self):    # Прыжок
         if not self.is_grounded:

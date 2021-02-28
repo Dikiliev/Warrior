@@ -33,9 +33,6 @@ class RigidBody:    # Типа физика))
         self.velocity = pygame.math.Vector2(0, 0)
         self.gravity = 800
 
-    def addForce(self, force):    # пока не используется
-        self.velocity += force
-
     def update(self):    # Вызывается каждый кадр
         if self.velocity.y < self.gravity:
             self.velocity.y += self.gravity // 15

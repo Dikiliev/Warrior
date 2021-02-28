@@ -4,7 +4,7 @@
 'pos_f': (-25, 55),
 'spawn': (110, 4),
 'spawn_f': (0, 4),
-'damage': 90,
+'damage': 150,
 'rate_of': 2,
 'speed': 1500,
 'bullet': 1,

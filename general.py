@@ -11,7 +11,7 @@ all_sprites = pygame.sprite.Group()
 player_group = pygame.sprite.Group()
 enemy_group = pygame.sprite.Group()
 borders_group = pygame.sprite.Group()
-traps_group = pygame.sprite.Group()
+ropes_group = pygame.sprite.Group()
 buttons_group = pygame.sprite.Group()
 weapons_group = pygame.sprite.Group()
 
@@ -123,8 +123,11 @@ def load_map():
                 elif 'right' in key:
                     Sprite(load_image('Tros.png'), Transform((x * 100 + 50, y * 100 - 2000)))
 
-            elif platform == 't':
-                Enemy(load_image(''), Transform((x * 100, y * 100)), borders_group)
+            elif platform == '|':
+                Sprite(load_image('rope.png'), Transform((x * 100, y * 100)), ropes_group)
+
+            elif platform == '1':
+                Enemy(0, Transform((x * 100, y * 100)))
 
 
 def right_or_left(x, y, platform):
