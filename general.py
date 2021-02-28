@@ -8,6 +8,7 @@ import sys
 size = WIDTH, HEIGHT = 1920, 1080
 FPS = 60
 
+# Группы спрайтов
 all_sprites = pygame.sprite.Group()
 player_group = pygame.sprite.Group()
 enemy_group = pygame.sprite.Group()
@@ -59,18 +60,20 @@ def cut_sheet(sheet, columns, rows, custom=False):
     return frames
 
 
-weapons = cut_sheet(load_image('Weapons.png'), 1, 8)
-bullets = cut_sheet(load_image('Bullets.png'), 1, 3)
+weapons = cut_sheet(load_image('Weapons.png'), 1, 8)     # Спрайты оружии
+bullets = cut_sheet(load_image('Bullets.png'), 1, 3)     # Спрайты патронов
 
 camera = Camera(Transform((0, 0)))
 player = None
 
+# Все враги
 ENEMIES = [{'weapon': 'pistol', 'animator': 'Enem4', 'hp': 100, 'radius': 200},
            {'weapon': 'ak_47', 'animator': 'Enem2', 'hp': 300, 'radius': 100},
            {'weapon': 'shotgun', 'animator': 'Enem2', 'hp': 300, 'radius': 200},
            {'weapon': 'sniper', 'animator': 'Enem1', 'hp': 200, 'radius': 0},
            {'weapon': 'minigun', 'animator': 'Enem3', 'hp': 1500, 'radius': 400}]
 
+# Платформы
 KEY_PLATFORM = {'up left': 0, 'up': 1, 'up right': 2,
                 'left': 4, '': 4, 'right': -1,
                 'down left': 4, 'down': 4, 'down right': 5,
@@ -79,12 +82,13 @@ KEY_PLATFORM = {'up left': 0, 'up': 1, 'up right': 2,
                 'thorns up': 9, 'thorns': 11, 'thorns down': 10,
                 'iron left': 0, 'iron': 1, 'iron right': 2}
 
-map_txt = open('data/level.txt').read().split()
-platforms = cut_sheet(load_image('platforms.png'), 3, 4)
+map_txt = open('data/level.txt').read().split()     # Текстовый файл карты
+platforms = cut_sheet(load_image('platforms.png'), 3, 4)     # платформы
 platforms.append(cut_sheet(load_image('platforms.png'), 3, 4, (200, 80)))
 
-irons = cut_sheet(load_image('platforms2.png'), 3, 1)
+irons = cut_sheet(load_image('platforms2.png'), 3, 1)     # Железные платформы
 
+# Звуки
 Sound = pygame.mixer.Sound
 SOUND_HIT = Sound('data/Audio/hit.mp3')
 SOUND_BLOOD = Sound('data/Audio/blood.mp3')
@@ -93,7 +97,7 @@ SOUNDS = [Sound('data/Audio/pistol.mp3'), Sound('data/Audio/gun.mp3'),
           Sound('data/Audio/psg.mp3'), Sound('data/Audio/shotgun.mp3')]
 
 
-def load_map():
+def load_map():     # Загрузка карты
     for y in range(len(map_txt)):
         for x in range(len(map_txt[y])):
             platform = map_txt[y][x]
@@ -131,6 +135,7 @@ def load_map():
             elif platform == 'b':
                 Bandages(load_image('bandages.png'), Transform((x * 100, y * 100)))
 
+    # Добавление врагов после прогрузки карты для того, что бы плаформы не были на врагах
     for y in range(len(map_txt)):
         for x in range(len(map_txt[y])):
             platform = map_txt[y][x]
@@ -162,16 +167,17 @@ def up_or_down(x, y, platform):
     return ''
 
 
+# Спрайты частиц
 PARTICLE_IMAGES = [load_image('blood.png'), load_image('ground_particle.png')]
 
 
-def create_particles(pos, index_img=0, count=20):
+def create_particles(pos, index_img=0, count=20):     # Создание частиц
     for i in range(count):
         Particle(PARTICLE_IMAGES[index_img], Transform((pos[0], pos[1])),
                  pygame.math.Vector2(random.randrange(-700, 700), random.randrange(-800, 700)))
 
 
-def health_indicator():
+def health_indicator():     # Индикатор здоровья
     font = pygame.font.Font(None, 70)
     text = font.render(str(player.hp), True, (255, 20, 85))
     screen.blit(text, (100, 50))

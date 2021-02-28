@@ -4,7 +4,7 @@ import general
 from random import random, randrange
 
 
-class Character(Sprite):    # Класс персонажа
+class Character(Sprite):    # Класс персонажа (Игрок/Враг)
     def __init__(self, animator_name, transform, group=None, hp=1000, speed=500, jump_force=1350):
         self.rb = RigidBody()   # Физака
         self.animator = Animator(animator_name)  # Контроллер Анимации
@@ -42,17 +42,18 @@ class Character(Sprite):    # Класс персонажа
         self.kill()
 
     def update(self):
+        # Если враг находится далеко от перса, то дальше нечего не делаем
         if abs(general.player.transform_.x() - self.transform_.x()) > 2000:
             return
-        if self.animator:
-            self.animator.update()
-            self.orig_img = self.animator.current_ani.image   # Замена спрайта (Анимация)
 
-            # Поворот перса
-            if self.is_flip:
-                self.image = pygame.transform.flip(self.orig_img, True, False)
-            else:
-                self.image = self.orig_img.copy()
+        self.animator.update()
+        self.orig_img = self.animator.current_ani.image   # Замена спрайта (Анимация)
+
+        # Поворот перса
+        if self.is_flip:
+            self.image = pygame.transform.flip(self.orig_img, True, False)
+        else:
+            self.image = self.orig_img.copy()
 
         # Поворот оружия и его update
         if self.weapon is not None:
@@ -60,7 +61,6 @@ class Character(Sprite):    # Класс персонажа
             self.weapon.update()
 
         if pygame.sprite.spritecollideany(self, general.ropes_group):    # Проверка сталкивается ли перс с веревков
-
             self.on_rope_stay = True
         else:
             self.on_rope_stay = False
@@ -128,22 +128,22 @@ class Character(Sprite):    # Класс персонажа
         self.rb.velocity.y -= self.jump_force
 
 
-class Pers(Character):
+class Pers(Character):  # класс Игрока
     def __init__(self, transform):
         super().__init__('Pers', transform, general.player_group)
-        self.can_pick_up = None
+        self.can_pick_up = None  # Оружие которое может подобрать перс
 
     def select_weapon(self, weapon=None):    # Выбов оружия
-        if weapon is not None:
-            self.weapon = weapon
-        else:
-            if self.can_pick_up is None:
+        if weapon is not None:  # Если оружие передано
+            self.weapon = weapon  # Просто заменяем
+        else:  # Иначе
+            if self.can_pick_up is None:  # Если подобрать нельзя, нечего не делаем
                 return
-            self.weapon.throw_weapons()
-            self.weapon = self.can_pick_up
-            self.weapon.init_pos(self.transform_)
+            self.weapon.throw_weapons()  # Выброс текущего оружия
+            self.weapon = self.can_pick_up  # Замена на другое
+            self.weapon.init_pos(self.transform_)  # Инизицалиция нового оружия
 
-        if general.player_group in self.groups():
+        if general.player_group in self.groups():  # Если оружие у перса
             self.weapon.is_enemy = False
 
     def update(self):
@@ -159,7 +159,7 @@ class Pers(Character):
                     text = font.render('Подобрать \'E\'', True, (255, 255, 255))
                     general.screen.blit(text, (1000, 50))
                     break
-
+        # Если перс столкнулся с аптечкой
         if pygame.sprite.spritecollide(self, general.bandages_group, True):
             self.hp = min(self.hp + 200, 1000)
 
@@ -188,8 +188,9 @@ class Enemy(Character):    # Класс Врага
 
     def attacking(self):  # Атака на игрока
         pos = general.player.transform_.int_pos()
-        pos = [pos[0] + 40, pos[1] + 40]
+        pos = [pos[0] + 40, pos[1] + 40]  # Позиция центра игрока
 
+        # Максимальное приближение к игроку
         if pos[0] > self.transform_.x() + 140:
             self.is_flip = False
             if self.transform_.x() + 140 < self.max_x:
@@ -200,15 +201,17 @@ class Enemy(Character):    # Класс Врага
                 self.move(-1)
 
         self.time -= 1 / general.FPS
+
+        # Переключение между состоянием атаки и наблюдения
         if self.time <= 0:
             self.is_attack ^= 1
             if self.is_attack:
                 self.time = random() * 5
             else:
                 self.time = random() * 3
-        if self.is_attack:
 
-            self.weapon.shoot(pos)
+        if self.is_attack:
+            self.weapon.shoot(pos)  # Атака
 
     def patrol(self):  # Патрулирование
         if self.max_x == self.min_x:
@@ -321,14 +324,17 @@ class Bullet(Sprite):    # Класс сюрикена, только его по
                 general.SOUND_HIT.play()
                 general.create_particles((self.transform_.x(), self.transform_.y()), 1, 10)
             else:
+                # Проверка столновение с персом
                 if self.is_enemy:
                     collider = pygame.sprite.spritecollideany(self, general.player_group)
                 else:
                     collider = pygame.sprite.spritecollideany(self, general.enemy_group)
+
                 if collider:
                     collider.take_damage(self.damage)
                     self.kill()
 
+            # Унижтожение после оконочание времени
             if self.time_destroy <= 0:
                 self.kill()
             self.time_destroy -= 1 / general.FPS

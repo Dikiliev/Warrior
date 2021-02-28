@@ -61,7 +61,7 @@ class Sprite(pygame.sprite.Sprite):    # Класс Спрайта
         self.rect = self.image.get_rect().move(self.transform_.x() - general.camera.transform_.x(),
                                                self.transform_.y() - general.camera.transform_.y())
 
-    def update(self):
+    def update(self):  # Смещение в зависимости от камеры
         self.rect = self.image.get_rect().move(self.transform_.x() - general.camera.transform_.x(),
                                                self.transform_.y() - general.camera.transform_.y())
 
@@ -72,7 +72,7 @@ class Sprite(pygame.sprite.Sprite):    # Класс Спрайта
         super().draw()
 
 
-class Background(Sprite):
+class Background(Sprite):  # Задний фон
     def __init__(self, image, transform, speed=0):
         super().__init__(image, transform)
         self.speed = speed
@@ -82,11 +82,11 @@ class Background(Sprite):
                                                self.transform_.y() - int(general.camera.transform_.y() * self.speed))
 
 
-class AnimationClip:
+class AnimationClip:  # Анимация
     def __init__(self, sheet, columns, rows, time_frames):
         self.sheet = sheet
 
-        self.frames = []
+        self.frames = []  # Спрайты
         self.cut_sheet(sheet, int(columns), int(rows))
 
         self.image = self.frames[0]
@@ -116,7 +116,7 @@ class AnimationClip:
         self.image = self.time_frames[key]
 
 
-class Animator:
+class Animator:  # Контроллер Анимации
     def __init__(self, controller):
         controller = open(f'data/Animations/{controller}.txt', 'r').read()
         self.animations = []
@@ -125,7 +125,7 @@ class Animator:
             self.animations.append(AnimationClip(general.load_image(ani[0]), ani[1], ani[2], eval(ani[3])))
         self.current_ani = self.animations[0]
 
-    def set_animation(self, i):
+    def set_animation(self, i):  # Смена анимации
         if i >= len(self.animations):
             return
         self.current_ani = self.animations[i]
@@ -134,7 +134,7 @@ class Animator:
         self.current_ani.update()
 
 
-class Particle(Sprite):
+class Particle(Sprite):  # класс частицы
     def __init__(self, image, transform_, velocity):
         super().__init__(image, transform_)
 
@@ -160,12 +160,12 @@ class Particle(Sprite):
         super().update()
 
 
-class Bandages(Sprite):
+class Bandages(Sprite):     # Аптечка
     def __init__(self, image, transform):
         super().__init__(image, transform, general.bandages_group)
 
 
-class Button(Sprite):
+class Button(Sprite):     # Кнопка
     def __init__(self, image, transform, func, group=None):
         super().__init__(image, transform, group)
         self.func = func
