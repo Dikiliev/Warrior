@@ -1,7 +1,7 @@
 import general
 from general import load_image
 from components import Camera, RigidBody, Transform, Background, Animator, Sprite, Button
-from characters import Character, Weapon, Enemy
+from characters import Character, Weapon, ShotGun Enemy
 import pygame
 import sys
 
@@ -44,34 +44,33 @@ def start_screen():    # Выполняется до начала игры
         btn.kill()
 
 
+camera = None
 cursor = None
+player = None
 is_player_attack = False
 
 
 def start():
     global cursor
+    global camera
+    global player
 
     general.load_map()
 
-    player = Character('Pers', Transform((100, 100)), group=general.player_group)
+    player = Character(general.load_image('Pers/Idle.png'), Transform((100, 100)), group=general.player_group)
     general.player = player
 
-    Enemy(4, Transform((1200, 100)))
+    enemy_1 = Enemy(general.load_image('Enemy/Enemy1_Idle.png'), Transform((1200, 100)), speed=200, hp=500)
+    enemy_1.select_weapon(Weapon('ak_47', enemy_1.transform_))
+    enemy_1.animator = Animator('Enem3')
 
-    general.camera = Camera(Transform((0, 0), parent=player.transform_), offset=(-900, -540))
+    camera = Camera(Transform((0, 0), parent=player.transform_), offset=(-900, -540))
+    general.camera = camera
 
     player.animator = Animator('Pers')
 
-    weapon = Weapon('pistol', player.transform_)
+    weapon = ShotGun('shotgun', player.transform_)
     player.select_weapon(weapon)
-
-    Weapon('ak_47', pos=(400, 950))
-    Weapon('machine gun', pos=(500, 950))
-    Weapon('sniper', pos=(600, 1050))
-    Weapon('shotgun', pos=(700, 1050))
-    Weapon('rifle', pos=(300, 1050))
-    Weapon('p90', pos=(200, 1050))
-    Weapon('minigun', pos=(800, 1050))
 
     cursor = Background(load_image('cursor.png'), Transform((100, 100)))
 
@@ -91,11 +90,9 @@ def update():    # цикл...
             elif event.key in (pygame.K_LEFT, pygame.K_a):
                 direction = -1
             elif event.key in (pygame.K_UP, pygame.K_w, pygame.K_SPACE):
-                general.player.jump()
+                player.jump()
             elif event.key == pygame.K_ESCAPE:
                 terminate()
-            elif event.key == pygame.K_e:
-                general.player.select_weapon()
 
         if event.type == pygame.KEYUP:
             if event.key in (pygame.K_RIGHT, pygame.K_d) and direction == 1:
@@ -114,23 +111,23 @@ def update():    # цикл...
         if event.type == pygame.MOUSEMOTION:
             mouse_pos = event.pos
             cursor.transform_.set_pos(mouse_pos[0] - 10, mouse_pos[1] - 10)
-            general.camera.transform_.pos = general.camera.offset + (cursor.transform_.pos - pygame.math.Vector2(960, 540)) * 0.2
+            camera.transform_.pos = camera.offset + (cursor.transform_.pos - pygame.math.Vector2(960, 540)) * 0.2
             if cursor.transform_.x() > 940:
-                general.player.is_flip = False
+                player.is_flip = False
             else:
-                general.player.is_flip = True
+                player.is_flip = True
 
             pygame.mouse.set_visible(False)
 
     general.screen.fill(pygame.Color((0, 0, 0)))
 
-    general.player.move(direction)  # Движения перса в направлении direction
+    player.move(direction)  # Движения перса в направлении direction
     general.all_sprites.update()
 
     if is_player_attack:
         pos = pygame.mouse.get_pos()
         pos = (pos[0] + general.camera.transform_.x(), pos[1] + general.camera.transform_.y())
-        general.player.weapon.shoot(pos)
+        player.weapon.shoot(pos)
 
     general.all_sprites.draw(general.screen)
 
