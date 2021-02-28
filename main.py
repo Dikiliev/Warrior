@@ -1,10 +1,12 @@
 import general
 from general import load_image
 from components import Camera, RigidBody, Transform, Background, Animator, Sprite, Button
-from characters import Character, Weapon, Enemy
+from characters import Character, Weapon, Enemy, Pers
 import pygame
 import sys
+from time import sleep
 
+is_game = True
 is_menu = True
 
 
@@ -21,7 +23,7 @@ def start_game():    # Начало игра (закрытие меню)
 def start_screen():    # Выполняется до начала игры
     # создание кнопок
     menu_buttons = [Sprite(general.load_image('fon.jpg'), Transform((0, 0))),
-                    Sprite(general.load_image('Title.jpg'), Transform((710, 80))),
+                    Sprite(general.load_image('title.png'), Transform((560, 80))),
                     Button(general.load_image('btn_start.png'), Transform((710, 500)), start_game,
                            general.buttons_group),
                     Button(general.load_image('btn_exit.png'), Transform((760, 700)), terminate,
@@ -44,28 +46,30 @@ def start_screen():    # Выполняется до начала игры
         btn.kill()
 
 
-def end_screen():
-    # создание кнопок
-    menu_buttons = [Sprite(general.load_image('fon.jpg'), Transform((0, 0))),
-                    Sprite(general.load_image('unnamed.png'), Transform((710, 80))),
-                    Button(general.load_image('btn_exit.png'), Transform((760, 700)), terminate,
-                           general.buttons_group)]
-    while is_menu:
+def finish():
+    Background(general.load_image('fon.jpg'), Transform((0, 0)))
+    Background(general.load_image('end.png'), Transform((560, 80)))
+    while True:
         for event in pygame.event.get():
-            if event.type == pygame.QUIT:
+            if event.type != pygame.MOUSEMOTION:
                 terminate()
-            elif event.type == pygame.MOUSEBUTTONDOWN:
-                general.buttons_group.update(event.pos)
-            elif event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_ESCAPE:
-                    terminate()
         general.all_sprites.update()
         general.all_sprites.draw(general.screen)
         pygame.display.flip()
         general.clock.tick(general.FPS)
-    # удаление кнопок
-    for btn in menu_buttons:
-        btn.kill()
+
+
+def game_over():
+    Background(general.load_image('fon.jpg'), Transform((0, 0)))
+    Background(general.load_image('gameover.png'), Transform((560, 80)))
+    while True:
+        for event in pygame.event.get():
+            if event.type != pygame.MOUSEMOTION:
+                terminate()
+        general.all_sprites.update()
+        general.all_sprites.draw(general.screen)
+        pygame.display.flip()
+        general.clock.tick(general.FPS)
 
 
 cursor = None
@@ -75,9 +79,12 @@ is_player_attack = False
 def start():
     global cursor
 
+    Background(general.load_image('background.jpg'), Transform((0, 0)))
+    Background(general.load_image('background2.png'), Transform((-100, 400)), 0.1)
+
     general.load_map()
 
-    player = Character('Pers', Transform((100, 100)), group=general.player_group)
+    player = Pers(Transform((200, 600)))
     general.player = player
 
     general.camera = Camera(Transform((0, 0), parent=player.transform_), offset=(-900, -540))
@@ -87,13 +94,13 @@ def start():
     weapon = Weapon('pistol', player.transform_)
     player.select_weapon(weapon)
 
-    Weapon('ak_47', pos=(400, 950))
-    Weapon('machine gun', pos=(500, 950))
-    Weapon('sniper', pos=(600, 1050))
-    Weapon('shotgun', pos=(700, 1050))
-    Weapon('rifle', pos=(300, 1050))
-    Weapon('p90', pos=(200, 1050))
-    Weapon('minigun', pos=(800, 1050))
+    Weapon('ak_47', pos=(2300, 950))
+    Weapon('shotgun', pos=(2450, 950))
+    Weapon('rifle', pos=(2600, 950))
+
+    Weapon('machine gun', pos=(14800, 1650))
+    Weapon('p90', pos=(15000, 1650))
+    Weapon('sniper', pos=(15200, 1650))
 
     cursor = Background(load_image('cursor.png'), Transform((100, 100)))
 
@@ -105,7 +112,12 @@ mouse_pos = (0, 0)
 
 def update():    # цикл...
     global direction, direction_y, mouse_pos, is_player_attack
+    if not general.player.is_alive:
+        game_over()
+
     for event in pygame.event.get():
+        if not general.player.is_alive:
+            terminate()
         if event.type == pygame.QUIT:
             terminate()
         if event.type == pygame.KEYDOWN:
@@ -161,9 +173,12 @@ def update():    # цикл...
             pygame.mouse.set_visible(False)
 
     general.screen.fill(pygame.Color((0, 0, 0)))
-    general.health_indicator()
 
     general.player.move(direction, direction_y)  # Движения перса в направлении direction
+
+    general.all_sprites.draw(general.screen)
+    general.health_indicator()
+
     general.all_sprites.update()
 
     if is_player_attack:
@@ -171,7 +186,10 @@ def update():    # цикл...
         pos = (pos[0] + general.camera.transform_.x(), pos[1] + general.camera.transform_.y())
         general.player.weapon.shoot(pos)
 
-    general.all_sprites.draw(general.screen)
+    if general.player.transform_.y() > 2000 and general.player.is_alive:
+        general.player.death()
+    elif general.player.transform_.x() > 44700:
+        finish()
 
     pygame.display.flip()
     general.clock.tick(general.FPS)
