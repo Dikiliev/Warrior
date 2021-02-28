@@ -98,9 +98,9 @@ def start():
     Weapon('shotgun', pos=(2450, 950))
     Weapon('rifle', pos=(2600, 950))
 
-    Weapon('machine gun', pos=(14800, 1750))
-    Weapon('p90', pos=(15000, 1750))
-    Weapon('sniper', pos=(15200, 1750))
+    Weapon('machine gun', pos=(14800, 1650))
+    Weapon('p90', pos=(15000, 1650))
+    Weapon('sniper', pos=(15200, 1650))
 
     cursor = Background(load_image('cursor.png'), Transform((100, 100)))
 
