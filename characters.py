@@ -49,11 +49,15 @@ class Character(Sprite):    # Класс персонажа
             self.death()
 
     def death(self):   # Смерть
+        general.SOUND_BLOOD.play()
+        general.create_particles(self.transform_.int_pos(), 0, 50)
         self.is_alive = False
         self.weapon.kill()
         self.kill()
 
     def update(self):
+        if abs(general.player.transform_.x() - self.transform_.x()) > 2000:
+            return
         if self.animator:
             self.animator.update()
             self.orig_img = self.animator.current_ani.image   # Замена спрайта (Анимация)
@@ -173,12 +177,14 @@ class Enemy(Character):    # Класс Врага
         pos = general.player.transform_.int_pos()
         pos = [pos[0] + 40, pos[1] + 40]
 
-        if pos[0] > self.transform_.x() + 40 + 100 < self.max_x:
+        if pos[0] > self.transform_.x() + 140:
             self.is_flip = False
-            self.move(1)
-        elif pos[0] < self.transform_.x() + 40 - 100 > self.min_x:
-            self.move(-1)
+            if self.transform_.x() + 140 < self.max_x:
+                self.move(1)
+        elif pos[0] < self.transform_.x() - 60:
             self.is_flip = True
+            if self.transform_.x() - 60 > self.min_x:
+                self.move(-1)
 
         self.time -= 1 / general.FPS
         if self.time <= 0:
@@ -192,6 +198,9 @@ class Enemy(Character):    # Класс Врага
             self.weapon.shoot(pos)
 
     def patrol(self):  # Патрулирование
+        if self.max_x == self.min_x:
+            return
+
         if self.transform_.x() >= self.max_x:
             self.direction = -1
         elif self.transform_.x() <= self.min_x:

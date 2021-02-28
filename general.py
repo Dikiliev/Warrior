@@ -63,11 +63,11 @@ bullets = cut_sheet(load_image('Bullets.png'), 1, 3)
 camera = Camera(Transform((0, 0)))
 player = None
 
-ENEMIES = [{'weapon': 'pistol', 'animator': 'Enem4', 'hp': 200, 'radius': 200},
-           {'weapon': 'ak_47', 'animator': 'Enem2', 'hp': 600, 'radius': 200},
-           {'weapon': 'shotgun', 'animator': 'Enem2', 'hp': 600, 'radius': 200},
-           {'weapon': 'sniper', 'animator': 'Enem1', 'hp': 300, 'radius': 0},
-           {'weapon': 'minigun', 'animator': 'Enem3', 'hp': 1500, 'radius': 200}]
+ENEMIES = [{'weapon': 'pistol', 'animator': 'Enem4', 'hp': 100, 'radius': 200},
+           {'weapon': 'ak_47', 'animator': 'Enem2', 'hp': 300, 'radius': 100},
+           {'weapon': 'shotgun', 'animator': 'Enem2', 'hp': 300, 'radius': 200},
+           {'weapon': 'sniper', 'animator': 'Enem1', 'hp': 200, 'radius': 0},
+           {'weapon': 'minigun', 'animator': 'Enem3', 'hp': 1500, 'radius': 400}]
 
 KEY_PLATFORM = {'up left': 0, 'up': 1, 'up right': 2,
                 'left': 4, '': 4, 'right': -1,
@@ -125,7 +125,7 @@ def load_map():
                 for i in range(20):
                     Sprite(load_image('rope.png'), Transform((x * 100, y * 100 - 100 * i)), ropes_group)
             elif platform == 'f':
-                Sprite(load_image('rope.png'), Transform((x * 100, y * 100)))
+                Sprite(load_image('flag.png'), Transform((x * 100, y * 100)))
 
     for y in range(len(map_txt)):
         for x in range(len(map_txt[y])):
@@ -174,4 +174,4 @@ def health_indicator():
     text_h = text.get_height()
     screen.blit(text, (150, 50))
     pygame.draw.rect(screen, (0, 255, 0), (150 - 10, 50 - 10,
-                                                   text_w + 20, text_h + 20), 1)
+                                                   text_w + 20, text_h + 20), 5)

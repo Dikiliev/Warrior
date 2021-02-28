@@ -65,6 +65,12 @@ class Sprite(pygame.sprite.Sprite):    # Класс Спрайта
         self.rect = self.image.get_rect().move(self.transform_.x() - general.camera.transform_.x(),
                                                self.transform_.y() - general.camera.transform_.y())
 
+    def draw(self, screen):
+        if abs(general.player.transform_.x() - self.transform_.x()) > 2000:
+            return
+
+        super().draw()
+
 
 class Background(Sprite):
     def __init__(self, image, transform, group=None, speed=0):
