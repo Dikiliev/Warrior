@@ -44,6 +44,30 @@ def start_screen():    # Выполняется до начала игры
         btn.kill()
 
 
+def end_screen():
+    # создание кнопок
+    menu_buttons = [Sprite(general.load_image('fon.jpg'), Transform((0, 0))),
+                    Sprite(general.load_image('unnamed.png'), Transform((710, 80))),
+                    Button(general.load_image('btn_exit.png'), Transform((760, 700)), terminate,
+                           general.buttons_group)]
+    while is_menu:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                terminate()
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                general.buttons_group.update(event.pos)
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    terminate()
+        general.all_sprites.update()
+        general.all_sprites.draw(general.screen)
+        pygame.display.flip()
+        general.clock.tick(general.FPS)
+    # удаление кнопок
+    for btn in menu_buttons:
+        btn.kill()
+
+
 cursor = None
 is_player_attack = False
 
