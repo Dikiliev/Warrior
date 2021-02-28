@@ -165,3 +165,13 @@ def create_particles(pos, index_img=0, count=20):
     for i in range(count):
         Particle(PARTICLE_IMAGES[index_img], Transform((pos[0], pos[1])),
                  pygame.math.Vector2(random.randrange(-700, 700), random.randrange(-800, 700)))
+
+
+def health_indicator():
+    font = pygame.font.Font(None, 100)
+    text = font.render(str(player.hp), True, (100, 255, 100))
+    text_w = text.get_width()
+    text_h = text.get_height()
+    screen.blit(text, (150, 50))
+    pygame.draw.rect(screen, (0, 255, 0), (150 - 10, 50 - 10,
+                                                   text_w + 20, text_h + 20), 1)

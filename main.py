@@ -161,6 +161,7 @@ def update():    # цикл...
             pygame.mouse.set_visible(False)
 
     general.screen.fill(pygame.Color((0, 0, 0)))
+    general.health_indicator()
 
     general.player.move(direction, direction_y)  # Движения перса в направлении direction
     general.all_sprites.update()
