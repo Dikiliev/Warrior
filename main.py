@@ -77,12 +77,11 @@ def start():
 
 
 direction = 0
-direction_y = 0
 mouse_pos = (0, 0)
 
 
 def update():    # цикл...
-    global direction, direction_y, mouse_pos, is_player_attack
+    global direction, mouse_pos, is_player_attack
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             terminate()
@@ -91,17 +90,8 @@ def update():    # цикл...
                 direction = 1
             elif event.key in (pygame.K_LEFT, pygame.K_a):
                 direction = -1
-
             elif event.key in (pygame.K_UP, pygame.K_w, pygame.K_SPACE):
-                if general.player.on_rope_stay:
-                    direction_y = -1
-                else:
-                    general.player.jump()
-
-            elif event.key in (pygame.K_DOWN, pygame.K_s):
-                if general.player.on_rope_stay:
-                    direction_y = 1
-
+                general.player.jump()
             elif event.key == pygame.K_ESCAPE:
                 terminate()
             elif event.key == pygame.K_e:
@@ -112,12 +102,6 @@ def update():    # цикл...
                 direction = 0
             elif event.key in (pygame.K_LEFT, pygame.K_a) and direction == -1:
                 direction = 0
-
-            elif event.key in (pygame.K_UP, pygame.K_w, pygame.K_SPACE):
-                direction_y = 0
-
-            elif event.key in (pygame.K_DOWN, pygame.K_s):
-                direction_y = 0
 
         if event.type == pygame.MOUSEBUTTONDOWN:
             if event.button == 1:
@@ -140,7 +124,7 @@ def update():    # цикл...
 
     general.screen.fill(pygame.Color((0, 0, 0)))
 
-    general.player.move(direction, direction_y)  # Движения перса в направлении direction
+    general.player.move(direction)  # Движения перса в направлении direction
     general.all_sprites.update()
 
     if is_player_attack:
