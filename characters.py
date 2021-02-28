@@ -42,6 +42,7 @@ class Character(Sprite):    # Класс персонажа
 
     def take_damage(self, damage):   # Получение урона
         general.SOUND_HIT.play()    # Звук попадения
+        general.create_particles((self.transform_.x(), self.transform_.y()))
         self.hp -= damage
         if self.hp <= 0:
             self.hp = 0
