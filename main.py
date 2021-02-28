@@ -6,7 +6,6 @@ import pygame
 import sys
 from time import sleep
 
-is_game = True
 is_menu = True
 
 
@@ -46,7 +45,7 @@ def start_screen():    # Выполняется до начала игры
         btn.kill()
 
 
-def finish():
+def finish():   # Конец игры
     Background(general.load_image('fon.jpg'), Transform((0, 0)))
     Background(general.load_image('end.png'), Transform((560, 80)))
     while True:
@@ -59,7 +58,7 @@ def finish():
         general.clock.tick(general.FPS)
 
 
-def game_over():
+def game_over():   # Проигрыш
     Background(general.load_image('fon.jpg'), Transform((0, 0)))
     Background(general.load_image('gameover.png'), Transform((560, 80)))
     while True:
@@ -72,48 +71,46 @@ def game_over():
         general.clock.tick(general.FPS)
 
 
-cursor = None
-is_player_attack = False
+cursor = None   # курсор
+is_player_attack = False   # флаг на нажатие ЛКМ
 
 
-def start():
+def start():   # При старте игры
     global cursor
 
-    Background(general.load_image('background.jpg'), Transform((0, 0)))
+    pygame.mouse.set_visible(False)   # Скрыть курсор
+    Background(general.load_image('background.jpg'), Transform((0, 0)))   # Фон
     Background(general.load_image('background2.png'), Transform((-100, 400)), 0.1)
 
-    general.load_map()
+    general.load_map()   # Загрузка карты
 
-    player = Pers(Transform((200, 600)))
+    player = Pers(Transform((200, 600)))   # Игрок
     general.player = player
 
-    general.camera = Camera(Transform((0, 0), parent=player.transform_), offset=(-900, -540))
+    general.camera = Camera(Transform((0, 0), parent=player.transform_), offset=(-900, -540))   # Камера
 
-    player.animator = Animator('Pers')
+    player.select_weapon(Weapon('pistol', player.transform_))   # Выбор оружия
 
-    weapon = Weapon('pistol', player.transform_)
-    player.select_weapon(weapon)
-
+    # Разбросанные по карте оружия
     Weapon('ak_47', pos=(2300, 950))
     Weapon('shotgun', pos=(2450, 950))
     Weapon('rifle', pos=(2600, 950))
-
     Weapon('machine gun', pos=(14800, 1650))
     Weapon('p90', pos=(15000, 1650))
     Weapon('sniper', pos=(15200, 1650))
 
-    cursor = Background(load_image('cursor.png'), Transform((100, 100)))
+    cursor = Background(load_image('cursor.png'), Transform((100, 100)))   # курсор мыши
 
 
-direction = 0
-direction_y = 0  # для лазанья по веревкам
-mouse_pos = (0, 0)
+direction = 0   # направление по х
+direction_y = 0  # направление по y (для лазанья по веревкам)
+mouse_pos = (0, 0)    # Позиция мыши
 
 
 def update():    # цикл...
     global direction, direction_y, mouse_pos, is_player_attack
-    if not general.player.is_alive:
-        game_over()
+    if not general.player.is_alive:   # Если игрок не жив
+        game_over()   # Проигрыш
 
     for event in pygame.event.get():
         if not general.player.is_alive:
@@ -162,6 +159,7 @@ def update():    # цикл...
                 is_player_attack = False
 
         if event.type == pygame.MOUSEMOTION:
+            # Движение прицела за курсором
             mouse_pos = event.pos
             cursor.transform_.set_pos(mouse_pos[0] - 10, mouse_pos[1] - 10)
             general.camera.transform_.pos = general.camera.offset + (cursor.transform_.pos - pygame.math.Vector2(960, 540)) * 0.2
@@ -170,33 +168,30 @@ def update():    # цикл...
             else:
                 general.player.is_flip = True
 
-            pygame.mouse.set_visible(False)
-
     general.screen.fill(pygame.Color((0, 0, 0)))
 
     general.player.move(direction, direction_y)  # Движения перса в направлении direction
-
-    general.all_sprites.draw(general.screen)
-    general.health_indicator()
+    general.all_sprites.draw(general.screen)  # Отображение
+    general.health_indicator()  # Обновление индикатора здоровья
 
     general.all_sprites.update()
 
-    if is_player_attack:
+    if is_player_attack:  # Огонь
         pos = pygame.mouse.get_pos()
         pos = (pos[0] + general.camera.transform_.x(), pos[1] + general.camera.transform_.y())
         general.player.weapon.shoot(pos)
 
-    if general.player.transform_.y() > 2000 and general.player.is_alive:
-        general.player.death()
-    elif general.player.transform_.x() > 44700:
-        finish()
+    if general.player.transform_.y() > 2000 and general.player.is_alive:  # Если перс упал
+        general.player.death()  # Проигрыш
+    elif general.player.transform_.x() > 44700:  # Если перс дошел до конца уровня
+        finish()  # Выигрыш
 
     pygame.display.flip()
     general.clock.tick(general.FPS)
 
 
 if __name__ == '__main__':
-    start_screen()
+    start_screen()  # Стартовое меню
     start()    # Вызов старта
     while True:
         update()    # цикл...
