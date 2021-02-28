@@ -1,5 +1,6 @@
 import pygame
-from components import Transform, Camera, Sprite
+import random
+from components import Transform, Camera, Sprite, Particle
 from characters import Character, Enemy
 import os
 
@@ -144,3 +145,12 @@ def up_or_down(x, y, platform):
     elif map_txt[y + 1][x] not in platform:
         return 'down'
     return ''
+
+
+def create_particles(position):
+    # количество создаваемых частиц
+    particle_count = 20
+    # возможные скорости
+    numbers = range(-5, 6)
+    for _ in range(particle_count):
+        Particle(load_image('blood.png'), position, random.choice(numbers), random.choice(numbers))
