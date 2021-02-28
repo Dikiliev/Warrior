@@ -4,7 +4,6 @@ from components import Transform, Camera, Sprite, Particle
 from characters import Character, Enemy
 import os
 
-
 size = WIDTH, HEIGHT = 1920, 1080
 FPS = 60
 
@@ -64,22 +63,19 @@ bullets = cut_sheet(load_image('Bullets.png'), 1, 3)
 camera = Camera(Transform((0, 0)))
 player = None
 
-
-ENEMIES = [{'weapon': 'sniper', 'animator': 'Enem1', 'hp': 300, 'radius': 200},
+ENEMIES = [{'weapon': 'pistol', 'animator': 'Enem4', 'hp': 200, 'radius': 200},
            {'weapon': 'ak_47', 'animator': 'Enem2', 'hp': 600, 'radius': 200},
-           {'weapon': 'minigun', 'animator': 'Enem3', 'hp': 1500, 'radius': 200},
-           {'weapon': 'pistol', 'animator': 'Enem4', 'hp': 200, 'radius': 200},
-           {'weapon': 'shotgun', 'animator': 'Enem2', 'hp': 600, 'radius': 200}]
+           {'weapon': 'shotgun', 'animator': 'Enem2', 'hp': 600, 'radius': 200},
+           {'weapon': 'sniper', 'animator': 'Enem1', 'hp': 300, 'radius': 0},
+           {'weapon': 'minigun', 'animator': 'Enem3', 'hp': 1500, 'radius': 200}]
 
-
-KEY_PLATFORM = {'up left': 0,   'up': 1,   'up right': 2,
-                'left': 4,      '': 4,    'right': -1,
+KEY_PLATFORM = {'up left': 0, 'up': 1, 'up right': 2,
+                'left': 4, '': 4, 'right': -1,
                 'down left': 4, 'down': 4, 'down right': 5,
                 'descent': 3, '.': None,
                 'bridge left': 6, 'bridge': 7, 'bridge right': 8,
                 'thorns up': 9, 'thorns': 11, 'thorns down': 10,
                 'iron left': 0, 'iron': 1, 'iron right': 2}
-
 
 map_txt = open('data/level.txt').read().split()
 platforms = cut_sheet(load_image('platforms.png'), 3, 4)
@@ -89,6 +85,7 @@ irons = cut_sheet(load_image('platforms2.png'), 3, 1)
 
 Sound = pygame.mixer.Sound
 SOUND_HIT = Sound('data/Audio/hit.mp3')
+SOUND_BLOOD = Sound('data/Audio/blood.mp3')
 SOUNDS = [Sound('data/Audio/pistol.mp3'), Sound('data/Audio/gun.mp3'),
           Sound('data/Audio/machine_gun.mp3'), Sound('data/Audio/sniper.mp3'),
           Sound('data/Audio/psg.mp3'), Sound('data/Audio/shotgun.mp3')]
@@ -125,10 +122,24 @@ def load_map():
                     Sprite(load_image('Tros.png'), Transform((x * 100 + 50, y * 100 - 2000)))
 
             elif platform == '|':
-                Sprite(load_image('rope.png'), Transform((x * 100, y * 100)), ropes_group)
+                for i in range(20):
+                    Sprite(load_image('rope.png'), Transform((x * 100, y * 100 - 100 * i)), ropes_group)
+            elif platform == 'f':
+                Sprite(load_image('rope.png'), Transform((x * 100, y * 100)))
 
-            elif platform == '1':
+    for y in range(len(map_txt)):
+        for x in range(len(map_txt[y])):
+            platform = map_txt[y][x]
+            if platform == '1':
                 Enemy(0, Transform((x * 100, y * 100)))
+            elif platform == '2':
+                Enemy(1, Transform((x * 100, y * 100)))
+            elif platform == '3':
+                Enemy(2, Transform((x * 100, y * 100)))
+            elif platform == '4':
+                Enemy(3, Transform((x * 100, y * 100)))
+            elif platform == '5':
+                Enemy(4, Transform((x * 100, y * 100)))
 
 
 def right_or_left(x, y, platform):
@@ -147,10 +158,10 @@ def up_or_down(x, y, platform):
     return ''
 
 
-def create_particles(position):
-    # количество создаваемых частиц
-    particle_count = 20
-    # возможные скорости
-    numbers = range(-5, 6)
-    for _ in range(particle_count):
-        Particle(load_image('blood.png'), position, random.choice(numbers), random.choice(numbers))
+PARTICLE_IMAGES = [load_image('blood.png'), load_image('ground_particle.png')]
+
+
+def create_particles(pos, index_img=0, count=20):
+    for i in range(count):
+        Particle(PARTICLE_IMAGES[index_img], Transform((pos[0], pos[1])),
+                 pygame.math.Vector2(random.randrange(-700, 700), random.randrange(-800, 700)))

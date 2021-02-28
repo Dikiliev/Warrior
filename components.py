@@ -128,25 +128,30 @@ class Animator:
         self.current_ani.update()
 
 
-class Particle(pygame.sprite.Sprite):
-    def __init__(self, image, pos, dx, dy):
-        super().__init__(general.all_sprites)
-        self.image = image
-        self.rect = self.image.get_rect()
+class Particle(Sprite):
+    def __init__(self, image, transform_, velocity):
+        super().__init__(image, transform_)
+
         # у каждой частицы своя скорость — это вектор
-        self.velocity = [dx, dy]
-        # и свои координаты
-        self.rect.x, self.rect.y = pos
-        # гравитация будет одинаковой (значение константы)
+        self.velocity = velocity
         self.gravity = 500
+        self.life_time = 0.2
 
     def update(self):
-        # применяем гравитационный эффект:
+        self.life_time -= 1 / general.FPS
+        if self.life_time <= 0:
+            self.kill()
+            return
+
         # движение с ускорением под действием гравитации
-        self.velocity[1] += self.gravity
+        self.velocity.y += self.gravity / general.FPS
         # перемещаем частицу
-        self.rect.x += self.velocity[0]
-        self.rect.y += self.velocity[1]
+        self.transform_.pos += self.velocity / general.FPS
+
+        # Изменяем размер
+        self.image = pygame.transform.scale(self.image, (int(200 * self.life_time), int(200 * self.life_time)))
+
+        super().update()
 
 
 class Button(Sprite):
