@@ -41,7 +41,7 @@ class Character(Sprite):    # Класс персонажа
             self.weapon.is_enemy = False
 
     def take_damage(self, damage):   # Получение урона
-        general.SOUND_HIT.play()    # Звук попадения
+        general.SOUND_BLOOD.play()    # Звук попадения
         general.create_particles((self.transform_.x(), self.transform_.y()))
         self.hp -= damage
         if self.hp <= 0:
@@ -294,8 +294,10 @@ class Bullet(Sprite):    # Класс сюрикена, только его по
             self.rb.update()    # вызывает update у RigidBody
             collider = pygame.sprite.spritecollideany(self, general.borders_group)    # Все объекты с которыми сталкивается перс
 
-            if collider:    # Проверка сталкивается вообще
+            if collider:    # Проверка сталкновения
                 self.kill()
+                general.SOUND_HIT.play()
+                general.create_particles((self.transform_.x(), self.transform_.y()), 1, 10)
             else:
                 if self.is_enemy:
                     collider = pygame.sprite.spritecollideany(self, general.player_group)

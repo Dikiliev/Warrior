@@ -4,7 +4,6 @@ from components import Transform, Camera, Sprite, Particle
 from characters import Character, Enemy
 import os
 
-
 size = WIDTH, HEIGHT = 1920, 1080
 FPS = 60
 
@@ -64,22 +63,19 @@ bullets = cut_sheet(load_image('Bullets.png'), 1, 3)
 camera = Camera(Transform((0, 0)))
 player = None
 
-
 ENEMIES = [{'weapon': 'sniper', 'animator': 'Enem1', 'hp': 300, 'radius': 200},
            {'weapon': 'ak_47', 'animator': 'Enem2', 'hp': 600, 'radius': 200},
            {'weapon': 'minigun', 'animator': 'Enem3', 'hp': 1500, 'radius': 200},
            {'weapon': 'pistol', 'animator': 'Enem4', 'hp': 200, 'radius': 200},
            {'weapon': 'shotgun', 'animator': 'Enem2', 'hp': 600, 'radius': 200}]
 
-
-KEY_PLATFORM = {'up left': 0,   'up': 1,   'up right': 2,
-                'left': 4,      '': 4,    'right': -1,
+KEY_PLATFORM = {'up left': 0, 'up': 1, 'up right': 2,
+                'left': 4, '': 4, 'right': -1,
                 'down left': 4, 'down': 4, 'down right': 5,
                 'descent': 3, '.': None,
                 'bridge left': 6, 'bridge': 7, 'bridge right': 8,
                 'thorns up': 9, 'thorns': 11, 'thorns down': 10,
                 'iron left': 0, 'iron': 1, 'iron right': 2}
-
 
 map_txt = open('data/level.txt').read().split()
 platforms = cut_sheet(load_image('platforms.png'), 3, 4)
@@ -89,6 +85,7 @@ irons = cut_sheet(load_image('platforms2.png'), 3, 1)
 
 Sound = pygame.mixer.Sound
 SOUND_HIT = Sound('data/Audio/hit.mp3')
+SOUND_BLOOD = Sound('data/Audio/blood.mp3')
 SOUNDS = [Sound('data/Audio/pistol.mp3'), Sound('data/Audio/gun.mp3'),
           Sound('data/Audio/machine_gun.mp3'), Sound('data/Audio/sniper.mp3'),
           Sound('data/Audio/psg.mp3'), Sound('data/Audio/shotgun.mp3')]
@@ -147,8 +144,10 @@ def up_or_down(x, y, platform):
     return ''
 
 
-def create_particles(pos):
-    # количество создаваемых частиц
-    particle_count = 20
-    for i in range(particle_count):
-        Particle(load_image('blood.png'), Transform((pos[0], pos[1])), pygame.math.Vector2(random.randrange(-700, 700), random.randrange(-800, 700)))
+PARTICLE_IMAGES = [load_image('blood.png'), load_image('ground_particle.png')]
+
+
+def create_particles(pos, index_img=0, count=20):
+    for i in range(count):
+        Particle(PARTICLE_IMAGES[index_img], Transform((pos[0], pos[1])),
+                 pygame.math.Vector2(random.randrange(-700, 700), random.randrange(-800, 700)))
