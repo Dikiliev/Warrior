@@ -153,4 +153,4 @@ def create_particles(position):
     # возможные скорости
     numbers = range(-5, 6)
     for _ in range(particle_count):
-        Particle(position, random.choice(numbers), random.choice(numbers))
+        Particle(load_image('blood.png'), position, random.choice(numbers), random.choice(numbers))

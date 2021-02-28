@@ -129,14 +129,9 @@ class Animator:
 
 
 class Particle(pygame.sprite.Sprite):
-    # сгенерируем частицы разного размера
-    fire = [general.load_image("star.png")]
-    for scale in (5, 10, 20):
-        fire.append(pygame.transform.scale(fire[0], (scale, scale)))
-
-    def __init__(self, pos, dx, dy):
+    def __init__(self, image, pos, dx, dy):
         super().__init__(general.all_sprites)
-        self.image = random.choice(self.fire)
+        self.image = image
         self.rect = self.image.get_rect()
         # у каждой частицы своя скорость — это вектор
         self.velocity = [dx, dy]
