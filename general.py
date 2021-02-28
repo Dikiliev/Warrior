@@ -63,11 +63,11 @@ bullets = cut_sheet(load_image('Bullets.png'), 1, 3)
 camera = Camera(Transform((0, 0)))
 player = None
 
-ENEMIES = [{'weapon': 'sniper', 'animator': 'Enem1', 'hp': 300, 'radius': 200},
+ENEMIES = [{'weapon': 'pistol', 'animator': 'Enem4', 'hp': 200, 'radius': 200},
            {'weapon': 'ak_47', 'animator': 'Enem2', 'hp': 600, 'radius': 200},
-           {'weapon': 'minigun', 'animator': 'Enem3', 'hp': 1500, 'radius': 200},
-           {'weapon': 'pistol', 'animator': 'Enem4', 'hp': 200, 'radius': 200},
-           {'weapon': 'shotgun', 'animator': 'Enem2', 'hp': 600, 'radius': 200}]
+           {'weapon': 'shotgun', 'animator': 'Enem2', 'hp': 600, 'radius': 200},
+           {'weapon': 'sniper', 'animator': 'Enem1', 'hp': 300, 'radius': 0},
+           {'weapon': 'minigun', 'animator': 'Enem3', 'hp': 1500, 'radius': 200}]
 
 KEY_PLATFORM = {'up left': 0, 'up': 1, 'up right': 2,
                 'left': 4, '': 4, 'right': -1,
@@ -122,10 +122,24 @@ def load_map():
                     Sprite(load_image('Tros.png'), Transform((x * 100 + 50, y * 100 - 2000)))
 
             elif platform == '|':
-                Sprite(load_image('rope.png'), Transform((x * 100, y * 100)), ropes_group)
+                for i in range(20):
+                    Sprite(load_image('rope.png'), Transform((x * 100, y * 100 - 100 * i)), ropes_group)
+            elif platform == 'f':
+                Sprite(load_image('rope.png'), Transform((x * 100, y * 100)))
 
-            elif platform == '1':
+    for y in range(len(map_txt)):
+        for x in range(len(map_txt[y])):
+            platform = map_txt[y][x]
+            if platform == '1':
                 Enemy(0, Transform((x * 100, y * 100)))
+            elif platform == '2':
+                Enemy(1, Transform((x * 100, y * 100)))
+            elif platform == '3':
+                Enemy(2, Transform((x * 100, y * 100)))
+            elif platform == '4':
+                Enemy(3, Transform((x * 100, y * 100)))
+            elif platform == '5':
+                Enemy(4, Transform((x * 100, y * 100)))
 
 
 def right_or_left(x, y, platform):

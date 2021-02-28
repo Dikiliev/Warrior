@@ -163,7 +163,7 @@ class Enemy(Character):    # Класс Врага
     def update(self):
         distance = abs(general.player.transform_.x() - self.transform_.x())  # дистанция до игрока
         self.move(0)
-        if distance > 500:
+        if distance > 800:
             self.patrol()
         else:
             self.attacking()
@@ -184,7 +184,7 @@ class Enemy(Character):    # Класс Врага
         if self.time <= 0:
             self.is_attack ^= 1
             if self.is_attack:
-                self.time = random() * 0.5
+                self.time = random() * 5
             else:
                 self.time = random() * 3
         if self.is_attack:
@@ -287,7 +287,7 @@ class Bullet(Sprite):    # Класс сюрикена, только его по
         super().__init__(image, transform)
         self.speed = speed
         self.damage = damage
-        self.time_destroy = 10.0  # Время до самоунчтожения
+        self.time_destroy = 5.0  # Время до самоунчтожения
 
     def update(self):
         if self.rb:    # Усли перс физичный
