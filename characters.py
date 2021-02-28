@@ -21,24 +21,10 @@ class Character(Sprite):    # Класс персонажа
 
         self.orig_img = self.image.copy()
 
-        self.can_pick_up = None
         self.on_rope_stay = False
 
     def set_animation(self, animation):   # Смена анимации
         self.animation = animation
-
-    def select_weapon(self, weapon=None):    # Выбов оружия
-        if weapon is not None:
-            self.weapon = weapon
-        else:
-            if self.can_pick_up is None:
-                return
-            self.weapon.throw_weapons()
-            self.weapon = self.can_pick_up
-            self.weapon.init_pos(self.transform_)
-
-        if general.player_group in self.groups():
-            self.weapon.is_enemy = False
 
     def take_damage(self, damage):   # Получение урона
         general.SOUND_BLOOD.play()    # Звук попадения
@@ -120,15 +106,6 @@ class Character(Sprite):    # Класс персонажа
                         #   сдвиг перса (если он немного зашел в стену)
                         self.transform_.pos.x = coll.transform_.x() + coll.rect.width - 1
 
-        # Оружие с которым сталкивается перс
-        weapons = pygame.sprite.spritecollide(self, general.weapons_group, False)
-        self.can_pick_up = None
-        if weapons:
-            for weapon in weapons:
-                if weapon.transform_.parent is None:
-                    self.can_pick_up = weapon
-                    break
-
         self.transform_.pos += (self.rb.velocity / general.FPS)    # Движение
         super().update()
 
@@ -151,6 +128,42 @@ class Character(Sprite):    # Класс персонажа
         self.rb.velocity.y -= self.jump_force
 
 
+class Pers(Character):
+    def __init__(self, transform):
+        super().__init__('Pers', transform, general.player_group)
+        self.can_pick_up = None
+
+    def select_weapon(self, weapon=None):    # Выбов оружия
+        if weapon is not None:
+            self.weapon = weapon
+        else:
+            if self.can_pick_up is None:
+                return
+            self.weapon.throw_weapons()
+            self.weapon = self.can_pick_up
+            self.weapon.init_pos(self.transform_)
+
+        if general.player_group in self.groups():
+            self.weapon.is_enemy = False
+
+    def update(self):
+        super().update()
+        # Оружие с которым сталкивается перс
+        weapons = pygame.sprite.spritecollide(self, general.weapons_group, False)
+        self.can_pick_up = None
+        if weapons:
+            for weapon in weapons:
+                if weapon.transform_.parent is None:
+                    self.can_pick_up = weapon
+                    font = pygame.font.Font(None, 70)
+                    text = font.render('Подобрать \'E\'', True, (255, 255, 255))
+                    general.screen.blit(text, (1000, 50))
+                    break
+
+        if pygame.sprite.spritecollide(self, general.bandages_group, True):
+            self.hp = min(self.hp + 200, 1000)
+
+
 class Enemy(Character):    # Класс Врага
     def __init__(self, type_enemy, transform):
         enemy = general.ENEMIES[type_enemy]
@@ -162,7 +175,7 @@ class Enemy(Character):    # Класс Врага
         self.min_x = self.transform_.x() - enemy['radius']
         self.direction = [-1, 1][randrange(0, 2)]  # направление
 
-        self.select_weapon(Weapon(enemy['weapon'], self.transform_))  # выьор оружия
+        self.weapon = Weapon(enemy['weapon'], self.transform_)  # выьор оружия
 
     def update(self):
         distance = abs(general.player.transform_.x() - self.transform_.x())  # дистанция до игрока

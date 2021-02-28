@@ -1,7 +1,7 @@
 import general
 from general import load_image
 from components import Camera, RigidBody, Transform, Background, Animator, Sprite, Button
-from characters import Character, Weapon, Enemy
+from characters import Character, Weapon, Enemy, Pers
 import pygame
 import sys
 from time import sleep
@@ -47,8 +47,8 @@ def start_screen():    # Выполняется до начала игры
 
 
 def finish():
-    Background(general.load_image('fon.jpg'), Transform((0, 0))),
-    Background(general.load_image('end.png'), Transform((560, 80))),
+    Background(general.load_image('fon.jpg'), Transform((0, 0)))
+    Background(general.load_image('end.png'), Transform((560, 80)))
     while True:
         for event in pygame.event.get():
             if event.type != pygame.MOUSEMOTION:
@@ -60,8 +60,8 @@ def finish():
 
 
 def game_over():
-    Background(general.load_image('fon.jpg'), Transform((0, 0))),
-    Background(general.load_image('gameover.png'), Transform((560, 80))),
+    Background(general.load_image('fon.jpg'), Transform((0, 0)))
+    Background(general.load_image('gameover.png'), Transform((560, 80)))
     while True:
         for event in pygame.event.get():
             if event.type != pygame.MOUSEMOTION:
@@ -79,9 +79,12 @@ is_player_attack = False
 def start():
     global cursor
 
+    Background(general.load_image('background.jpg'), Transform((0, 0)))
+    Background(general.load_image('background2.png'), Transform((-100, 400)), 0.1)
+
     general.load_map()
 
-    player = Character('Pers', Transform((100, 100)), group=general.player_group)
+    player = Pers(Transform((200, 600)))
     general.player = player
 
     general.camera = Camera(Transform((0, 0), parent=player.transform_), offset=(-900, -540))
@@ -170,17 +173,18 @@ def update():    # цикл...
             pygame.mouse.set_visible(False)
 
     general.screen.fill(pygame.Color((0, 0, 0)))
-    general.health_indicator()
 
     general.player.move(direction, direction_y)  # Движения перса в направлении direction
+
+    general.all_sprites.draw(general.screen)
+    general.health_indicator()
+
     general.all_sprites.update()
 
     if is_player_attack:
         pos = pygame.mouse.get_pos()
         pos = (pos[0] + general.camera.transform_.x(), pos[1] + general.camera.transform_.y())
         general.player.weapon.shoot(pos)
-
-    general.all_sprites.draw(general.screen)
 
     if general.player.transform_.y() > 2000 and general.player.is_alive:
         general.player.death()

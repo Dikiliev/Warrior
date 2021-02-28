@@ -1,8 +1,9 @@
 import pygame
 import random
-from components import Transform, Camera, Sprite, Particle
+from components import Transform, Camera, Sprite, Particle, Bandages
 from characters import Character, Enemy
 import os
+import sys
 
 size = WIDTH, HEIGHT = 1920, 1080
 FPS = 60
@@ -14,6 +15,7 @@ borders_group = pygame.sprite.Group()
 ropes_group = pygame.sprite.Group()
 buttons_group = pygame.sprite.Group()
 weapons_group = pygame.sprite.Group()
+bandages_group = pygame.sprite.Group()
 
 pygame.init()
 screen = pygame.display.set_mode(size)
@@ -126,6 +128,8 @@ def load_map():
                     Sprite(load_image('rope.png'), Transform((x * 100, y * 100 - 100 * i)), ropes_group)
             elif platform == 'f':
                 Sprite(load_image('flag.png'), Transform((x * 100, y * 100)))
+            elif platform == 'b':
+                Bandages(load_image('bandages.png'), Transform((x * 100, y * 100)))
 
     for y in range(len(map_txt)):
         for x in range(len(map_txt[y])):
@@ -168,10 +172,8 @@ def create_particles(pos, index_img=0, count=20):
 
 
 def health_indicator():
-    font = pygame.font.Font(None, 100)
-    text = font.render(str(player.hp), True, (100, 255, 100))
-    text_w = text.get_width()
-    text_h = text.get_height()
-    screen.blit(text, (150, 50))
-    pygame.draw.rect(screen, (0, 255, 0), (150 - 10, 50 - 10,
-                                                   text_w + 20, text_h + 20), 5)
+    font = pygame.font.Font(None, 70)
+    text = font.render(str(player.hp), True, (255, 20, 85))
+    screen.blit(text, (100, 50))
+    pygame.draw.rect(screen, (255, 20, 85), (250, 50, 300, 40))
+    pygame.draw.rect(screen, (255, 20, 85), (250, 50, player.hp / 3, 40))

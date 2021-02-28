@@ -73,8 +73,8 @@ class Sprite(pygame.sprite.Sprite):    # Класс Спрайта
 
 
 class Background(Sprite):
-    def __init__(self, image, transform, group=None, speed=0):
-        super().__init__(image, transform, group)
+    def __init__(self, image, transform, speed=0):
+        super().__init__(image, transform)
         self.speed = speed
 
     def update(self):
@@ -158,6 +158,11 @@ class Particle(Sprite):
         self.image = pygame.transform.scale(self.image, (int(200 * self.life_time), int(200 * self.life_time)))
 
         super().update()
+
+
+class Bandages(Sprite):
+    def __init__(self, image, transform):
+        super().__init__(image, transform, general.bandages_group)
 
 
 class Button(Sprite):
