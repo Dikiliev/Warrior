@@ -181,5 +181,5 @@ def health_indicator():     # Индикатор здоровья
     font = pygame.font.Font(None, 70)
     text = font.render(str(player.hp), True, (255, 20, 85))
     screen.blit(text, (100, 50))
-    pygame.draw.rect(screen, (255, 20, 85), (250, 50, 300, 40))
+    pygame.draw.rect(screen, (30, 30, 30), (250, 50, 1000 / 3, 40))
     pygame.draw.rect(screen, (255, 20, 85), (250, 50, player.hp / 3, 40))
